@@ -1,0 +1,11 @@
+# Java compiled
+*.class
+
+# BlueJ (recommandé en groupe)
+*.ctxt
+
+# macOS
+.DS_Store
+
+# logs
+*.log
