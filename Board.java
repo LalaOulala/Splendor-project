@@ -29,11 +29,9 @@ public class Board implements Displayable {
         visibleCards = new DevCard[3][4];
         
         // Création des piles de jeton de ressources
-        int nombreJetons = 7;
-        if (nbPlayers <=3 && nbPlayers > 1){
-            nombreJetons = nbPlayers + 2;
-        } else if (nbPlayers == 1){
-            nombreJetons = 0;
+        int nombreJetons = nbPlayers + 2;
+        if (nbPlayers == 4){
+            nombreJetons = 7;
         }
         resources = new Resources(nombreJetons, nombreJetons, nombreJetons, nombreJetons, nombreJetons);
         
@@ -124,6 +122,11 @@ public class Board implements Displayable {
         resources.updateNbResource(res, v);
     }
     
+    public Resources getResources(){
+        return resources;
+    }
+    
+    
     // Gestion Cartes
     
     // ============= GESTION DES CARTES =============
@@ -186,7 +189,9 @@ public class Board implements Displayable {
      */
     public boolean canGiveDiffTokens(List<Resource> requestedResources) {
         
-        if (requestedResources.size() != 3) {
+        // Vérifier qu'il y a entre 1 et 3 ressources (modifié ultérieurement afin de gérer le cas ou il ne reste plus assez
+        // de ressources sur le plateau, mais le joueur se contente d'un seul jeton au lieu de 3.
+        if (requestedResources.size() < 1 || requestedResources.size() > 3) {
             return false;
         }
 
@@ -262,7 +267,7 @@ public class Board implements Displayable {
 
         //Card display
         String[] carteDisplay = Display.emptyStringArray(0, 0);
-        for(int i = 0; i < 3; i++){ //-- parcourir les différents niveaux de carte (i)
+        for(int i = 2; i >= 0; i--){ //-- parcourir les différents niveaux de carte (i)
             String[] tierCardsDisplay = Display.emptyStringArray(8, 0);
             for(int j = 0; j < 4; j++){ //-- parcourir les 4 cartes faces visibles pour un niveau donné (j)
                 tierCardsDisplay = Display.concatStringArray(tierCardsDisplay, visibleCards[i][j]!=null ? visibleCards[i][j].toStringArray() : DevCard.noCardStringArray(), false);

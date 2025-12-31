@@ -65,7 +65,11 @@ public abstract class Player implements Displayable {
         return resources.getNbResource(res);
     }
     
-
+        public Resources getRessources(){
+        return resources;
+    }
+    
+    
     
     /**
      * Compte le nombre de ressources d'un type donné sur les cartes achetées

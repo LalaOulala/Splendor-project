@@ -73,6 +73,23 @@ public class Resources {
     }
     
     /**
+     * Retourne la liste des types de ressources pour lesquels des ressources sont disponibles
+     * @return une liste des ressources disponibles (quantité > 0)
+     */
+    public java.util.List<Resource> getAvailableResources() {
+        java.util.List<Resource> available = new java.util.ArrayList<>();
+        
+        // Parcourir les 5 types de ressources
+        for (Resource res : Resource.values()) {
+            if (getNbResource(res) > 0) {
+                available.add(res);
+            }
+        }
+        
+        return available;
+    }
+    
+    /**
      * Représentation textuelle des ressources
      * Utile pour le débogage
      * @return une chaîne décrivant les ressources
