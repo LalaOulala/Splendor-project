@@ -14,17 +14,27 @@ Le jeu Splendor est un jeu de stratégie où les joueurs incarnent des marchands
 
 
 
+
+
+
+
+
+
 ### 🎮 Règles du jeu
 
 
 
-Objectif
+#### Objectif
+
+
 
 Être le premier joueur à atteindre 15 points de prestige en achetant des cartes de développement.
 
 
 
-Tour de jeu
+#### Tour de jeu
+
+
 
 À chaque tour, un joueur peut effectuer une seule action parmi :
 
@@ -46,7 +56,9 @@ Passer son tour
 
 
 
-Cartes de développement
+#### Cartes de développement
+
+
 
 Organisées en 3 niveaux de difficulté (1, 2, 3)
 
@@ -64,7 +76,9 @@ Chaque carte produit un bonus permanent d'une ressource
 
 
 
-Ressources
+#### Ressources
+
+
 
 5 types de gemmes :
 
@@ -90,15 +104,25 @@ Ressources
 
 
 
-Limite de jetons
+#### Limite de jetons
+
+
 
 Un joueur ne peut pas posséder plus de 10 jetons. S'il dépasse, il doit défausser jusqu'à revenir à 10.
 
 
 
-Fin de partie
+#### Fin de partie
+
+
 
 La partie se termine dès qu'un joueur atteint 15 points. En cas d'égalité, le joueur avec le moins de cartes gagne.
+
+
+
+
+
+
 
 
 
@@ -106,49 +130,273 @@ La partie se termine dès qu'un joueur atteint 15 points. En cas d'égalité, le
 
 
 
-Structure des classes
-
-text
-
 splendor/
 
-├── Resource.java              (Énumération des types de ressources)
+├── Resource.java                     (Énumération des 5 types de ressources)
 
-├── Resources.java             (Gestion des quantités de ressources)
+├── Resources.java                    (Gestion des quantités de ressources)
 
-├── DevCard.java               (Carte de développement)
+├── DevCard.java                      (Carte de développement)
 
-├── Board.java                 (Plateau de jeu)
+├── Board.java                        (Plateau de jeu avec piles et cartes visibles)
 
-├── Player.java                (Classe abstraite joueur)
+├── Player.java                       (Classe abstraite joueur)
 
-├── HumanPlayer.java           (Joueur humain)
+├── HumanPlayer.java                  (Joueur humain avec interaction console)
 
-├── DumbRobotPlayer.java       (Robot avec IA simple)
+├── DumbRobotPlayer.java              (Robot avec stratégie simple)
 
-├── Action.java                (Interface pour les actions)
+├── Action.java                       (Interface pour toutes les actions)
 
-├── PassAction.java            (Action : passer son tour)
+├── PassAction.java                   (Action : passer son tour)
 
-├── PickSameTokensAction.java  (Action : prendre 2 jetons identiques)
+├── PickSameTokensAction.java         (Action : prendre 2 jetons identiques)
 
-├── PickDiffTokensAction.java  (Action : prendre 3 jetons différents)
+├── PickDiffTokensAction.java         (Action : prendre 1-3 jetons différents)
 
-├── BuyCardAction.java         (Action : acheter une carte)
+├── BuyCardAction.java                (Action : acheter une carte)
 
-├── DiscardTokensAction.java   (Action : défausser des jetons)
+├── DiscardTokensAction.java          (Action : défausser des jetons)
 
-├── Game.java                  (Orchestration de la partie)
+├── Game.java                         (Orchestration de la partie)
 
-├── Display.java               (Interface graphique console)
+├── Display.java                      (Interface graphique console fournie)
 
-├── Displayable.java           (Interface pour l'affichage)
+├── Display$1.class                   (Classe interne de Display)
 
-└── stats.csv                  (Données des cartes)
+├── Display$2.class                   (Classe interne de Display)
+
+├── Display$TextAreaPrintStream.class (Classe interne de Display)
+
+├── Display$ReadableTextField.class   (Classe interne de Display)
+
+├── Displayable.java                  (Interface pour l'affichage)
+
+├── stats.csv                         (Données des 90 cartes)
+
+└── package.bluej                     (Configuration BlueJ)
+
+…
 
 
 
-Diagramme de classes 
+
+
+
+
+
+
+
+
+#### Diagramme de classes 
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+
+│                         <<interface>>                           │
+
+│                           Action                                │
+
+│  + process(Board, Player): void                                 │
+
+│  + toString(): String                                           │
+
+└──────────────┬──────────────────────────────────────────────────┘
+
+&nbsp;              │
+
+&nbsp;      ┌───────┴────────────────────────────────┐
+
+&nbsp;      │       │           │           │        │
+
+&nbsp;      ▼       ▼           ▼           ▼        ▼
+
+&nbsp; PassAction  PickSame  PickDiff   BuyCard  DiscardTokens
+
+&nbsp;            TokensAction TokensAction Action    Action
+
+
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+
+│                      <<abstract>>                               │
+
+│                        Player                                   │
+
+│  # id: int                                                      │
+
+│  # name: String                                                 │
+
+│  # points: int                                                  │
+
+│  # purchasedCards: ArrayList<DevCard>                           │
+
+│  # resources: Resources                                         │
+
+│  + chooseAction(Board): Action  \[abstract]                      │
+
+│  + chooseDiscardingTokens(): Resources  \[abstract]              │
+
+│  + canBuyCard(DevCard): boolean                                 │
+
+│  + getResFromCards(Resource): int                               │
+
+└──────────────┬──────────────────────────────────────────────────┘
+
+&nbsp;              │
+
+&nbsp;      ┌───────┴───────┐
+
+&nbsp;      ▼               ▼
+
+&nbsp; HumanPlayer    DumbRobotPlayer
+
+&nbsp; - scanner       (stratégie simple)
+
+
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+
+│                            Game                                 │
+
+│  + static display: Display                                      │
+
+│  - board: Board                                                 │
+
+│  - players: ArrayList<Player>                                   │
+
+│  + play(): void                                                 │
+
+│  - move(int): void                                              │
+
+│  - discardToken(int): void                                      │
+
+│  - isGameOver(): boolean                                        │
+
+│  - gameOver(): void                                             │
+
+└─────────────┬───────────────────────────────┬───────────────────┘
+
+&nbsp;             │                               │
+
+&nbsp;             ▼                               ▼
+
+&nbsp;       ┌─────────┐                    ┌──────────────┐
+
+&nbsp;       │  Board  │                    │   Display    │
+
+&nbsp;       │         │◄───────────────────┤              │
+
+&nbsp;       └─────────┘                    └──────────────┘
+
+&nbsp;       │       │
+
+&nbsp;       │       └──────┐
+
+&nbsp;       ▼              ▼
+
+&nbsp;   DevCard\[]\[]   Stack<DevCard>\[]
+
+&nbsp;       │
+
+&nbsp;       └──────► Resources
+
+
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+
+│                         DevCard                                 │
+
+│  - tier: int                                                    │
+
+│  - cost: Resources                                              │
+
+│  - points: int                                                  │
+
+│  - resourceType: Resource                                       │
+
+│  + getTier(): int                                               │
+
+│  + getCost(): Resources                                         │
+
+│  + getPoints(): int                                             │
+
+│  + getResourceType(): Resource                                  │
+
+└─────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+
+│                        Resources                                │
+
+│  - resources: int\[5]                                            │
+
+│  + getNbResource(Resource): int                                 │
+
+│  + setNbResource(Resource, int): void                           │
+
+│  + updateNbResource(Resource, int): void                        │
+
+│  + getAvailableResources(): List<Resource>                      │
+
+└─────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+
+│                    <<enumeration>>                              │
+
+│                        Resource                                 │
+
+│  DIAMOND, SAPPHIRE, EMERALD, RUBY, ONYX                         │
+
+│  + toSymbol(): String                                           │
+
+└─────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+
+│                    <<interface>>                                │
+
+│                      Displayable                                │
+
+│  + toStringArray(): String\[]                                    │
+
+└─────────────────────────────────────────────────────────────────┘
+
+&nbsp;       ▲           ▲            ▲
+
+&nbsp;       │           │            │
+
+&nbsp;    Board       DevCard      Player
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -248,6 +496,12 @@ Nom du robot 1 : Skynet
 
 
 
+
+
+
+
+
+
 #### 🎯 Utilisation (Joueur humain)
 
 
@@ -302,6 +556,14 @@ Le jeu demande automatiquement quels jetons défausser jusqu'à revenir à 10.
 
 
 
+
+
+
+
+
+
+
+
 #### 🤖 Intelligence Artificielle (Robot)
 
 
@@ -330,7 +592,25 @@ Cette stratégie est prévisible mais fonctionnelle pour tester le jeu.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 ### 📊 Fonctionnalités implémentées
+
+
+
+
+
+
 
 
 
@@ -382,6 +662,12 @@ Cette stratégie est prévisible mais fonctionnelle pour tester le jeu.
 
 
 
+
+
+
+
+
+
 #### ✅ Améliorations de l'interface
 
 
@@ -410,6 +696,14 @@ Cette stratégie est prévisible mais fonctionnelle pour tester le jeu.
 
 
 
+
+
+
+
+
+
+
+
 ### ❌ Non implémenté (version simplifiée)
 
 
@@ -431,6 +725,16 @@ Cette stratégie est prévisible mais fonctionnelle pour tester le jeu.
 
 
 &nbsp;Interface graphique
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -474,6 +778,12 @@ Bob : 15 points, 9 cartes
 
 
 
+
+
+
+
+
+
 ### 👨‍💻 Auteur
 
 
@@ -483,6 +793,16 @@ FONFREIDE Quentin
 Étudiant en 2ème année de prépa informatique
 
 Projet réalisé en décembre 2025
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -499,6 +819,16 @@ Cahier des charges du projet : 2025-Projet-Splendor.odt
 
 
 Données des cartes : stats.csv (90 cartes de développement)
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -531,6 +861,18 @@ Algorithmique : stratégie d'IA, gestion d'états de jeu
 
 
 Débogage : résolution de problèmes de buffer, gestion d'exceptions
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
