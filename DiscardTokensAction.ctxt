@@ -1,13 +1,13 @@
 #BlueJ class context
 comment0.target=DiscardTokensAction
-comment0.text=\r\n\ Action\ DiscardTokensAction\r\n\ D\u00E9fausser\ des\ jetons\ quand\ le\ joueur\ en\ poss\u00E8de\ plus\ de\ 10\r\n\ Les\ jetons\ d\u00E9fauss\u00E9s\ retournent\ sur\ le\ plateau\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 1.0\r\n
+comment0.text=\r\n\ Action\ de\ d\u00E9fausse\ de\ jetons\ lorsque\ le\ joueur\ en\ poss\u00E8de\ plus\ de\ 10.\r\n\ \r\n\ Selon\ les\ r\u00E8gles\ du\ jeu,\ un\ joueur\ ne\ peut\ pas\ poss\u00E9der\ plus\ de\ 10\ jetons.\r\n\ Si\ cette\ limite\ est\ d\u00E9pass\u00E9e\ apr\u00E8s\ avoir\ pris\ des\ jetons,\ il\ doit\ d\u00E9fausser\r\n\ l'exc\u00E9dent.\ Les\ jetons\ d\u00E9fauss\u00E9s\ retournent\ sur\ le\ plateau\ et\ sont\ \u00E0\ nouveau\r\n\ disponibles\ pour\ tous\ les\ joueurs.\r\n\ \r\n\ Cette\ action\ est\ obligatoire\ et\ d\u00E9clench\u00E9e\ automatiquement\ par\ la\ classe\ Game\r\n\ apr\u00E8s\ chaque\ tour\ si\ le\ joueur\ a\ plus\ de\ 10\ jetons.\ Le\ joueur\ peut\ d\u00E9fausser\r\n\ un\ ou\ plusieurs\ jetons\ jusqu'\u00E0\ revenir\ \u00E0\ 10\ (ou\ moins).\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 01/01/2026\r\n
 comment1.params=toDiscard
 comment1.target=DiscardTokensAction(Resources)
-comment1.text=\r\n\ Constructeur\r\n\ @param\ toDiscard\ les\ ressources\ \u00E0\ d\u00E9fausser\r\n
+comment1.text=\r\n\ Constructeur.\r\n\ \r\n\ @param\ toDiscard\ les\ ressources\ que\ le\ joueur\ souhaite\ d\u00E9fausser\r\n
 comment2.params=board\ player
 comment2.target=void\ process(Board,\ Player)
-comment2.text=\r\n\ Ex\u00E9cute\ l'action\ \:\ retire\ les\ jetons\ du\ joueur\ et\ les\ remet\ sur\ le\ plateau\r\n\ @param\ board\ le\ plateau\ de\ jeu\r\n\ @param\ player\ le\ joueur\ qui\ effectue\ l'action\r\n
+comment2.text=\r\n\ Ex\u00E9cute\ l'action\ \:\ retire\ les\ jetons\ du\ joueur\ et\ les\ remet\ sur\ le\ plateau.\r\n\ \r\n\ Pour\ chaque\ type\ de\ ressource\ \u00E0\ d\u00E9fausser,\ effectue\ un\ transfert\ du\ joueur\ vers\ le\ plateau.\r\n\ C'est\ l'op\u00E9ration\ inverse\ de\ prendre\ des\ jetons\ \:\ le\ joueur\ perd\ des\ jetons\ et\ le\ plateau\r\n\ les\ r\u00E9cup\u00E8re.\r\n\ \r\n\ @param\ board\ le\ plateau\ de\ jeu\ (re\u00E7oit\ les\ jetons\ d\u00E9fauss\u00E9s)\r\n\ @param\ player\ le\ joueur\ qui\ d\u00E9fausse\ les\ jetons\r\n
 comment3.params=
 comment3.target=java.lang.String\ toString()
-comment3.text=\r\n\ Repr\u00E9sentation\ textuelle\r\n\ @return\ description\ de\ l'action\r\n
+comment3.text=\r\n\ Retourne\ une\ description\ de\ l'action\ avec\ les\ jetons\ d\u00E9fauss\u00E9s.\r\n\ \r\n\ Affiche\ uniquement\ les\ ressources\ dont\ la\ quantit\u00E9\ est\ sup\u00E9rieure\ \u00E0\ 0.\r\n\ Format\ \:\ "D\u00E9fausser\ \:\ 2\u2666D\ 1\u2665R"\r\n\ \r\n\ @return\ description\ de\ l'action\ avec\ les\ quantit\u00E9s\ et\ symboles\ des\ ressources\ d\u00E9fauss\u00E9es\r\n
 numComments=4

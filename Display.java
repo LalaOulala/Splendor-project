@@ -16,6 +16,22 @@ import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * Classe utilitaire pour gérer l'affichage graphique du jeu Splendor.
+ * 
+ * Cette classe crée une interface graphique Swing composée de deux zones principales :
+ * une zone supérieure pour afficher l'état du plateau de jeu, et une zone inférieure
+ * pour la console d'interaction avec le joueur. Elle fournit des flux d'entrée/sortie
+ * personnalisés permettant d'utiliser les méthodes print/println comme avec System.out,
+ * et de lire les entrées utilisateur comme avec Scanner.
+ * 
+ * Cette classe est fournie par l'enseignant et n'a pas besoin d'être modifiée ni comprise en profondeur.
+ * Elle gère automatiquement l'affichage des caractères Unicode nécessaires pour
+ * le rendu visuel du jeu (symboles de ressources, bordures ASCII, etc.).
+ * 
+ * @author Fourni par l'enseignant
+ * @version 01/01/2026
+ */
 class Display {
     /*
      * Voir l'utilisation de la classe au début de la classe Game.

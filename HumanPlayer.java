@@ -3,28 +3,54 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Classe HumanPlayer
- * Représente un joueur humain qui interagit via le terminal
- * Demande à l'utilisateur de choisir ses actions
+ * Joueur humain qui interagit via le terminal.
+ * 
+ * Cette classe gère l'interaction avec un joueur humain réel qui choisit ses actions
+ * en tapant ses choix au clavier. Elle affiche des menus, lit les entrées, valide
+ * les choix, et gère les erreurs de saisie.
+ * 
+ * Fonctionnalités principales :
+ * - Affichage d'un menu principal avec 4 options (prendre jetons, acheter, passer)
+ * - Validation complète des entrées utilisateur avec messages d'erreur explicites
+ * - Système de retour en arrière (tapez 0 pour annuler à tout moment)
+ * - Confirmation avant chaque action pour éviter les erreurs
+ * - Affichage détaillé des ressources disponibles et des coûts de cartes
+ * 
+ * Améliorations personnelles :
+ * - Possibilité de retourner au menu principal à tout moment
+ * - Confirmations avant validation finale
+ * - Récapitulatifs clairs avant chaque action
+ * - Gestion des cas limites (moins de 3 ressources disponibles)
  * 
  * @author FONFREIDE Quentin
- * @version 1.0
+ * @version 01/01/2026
  */
 public class HumanPlayer extends Player {
     
     /**
-     * Constructeur
-     * @param id identifiant du joueur
-     * @param name nom du joueur
+     * Constructeur.
+     * Appelle le constructeur parent pour initialiser l'identité et l'état du joueur.
+     * 
+     * @param id identifiant unique du joueur (0 à 3)
+     * @param name nom du joueur (demandé au début de la partie)
      */
     public HumanPlayer(int id, String name) {
         super(id, name);
     }
     
     /**
-     * Demande au joueur humain de choisir une action
-     * @param board le plateau de jeu
-     * @return l'action choisie
+     * Demande au joueur humain de choisir une action pour son tour.
+     * 
+     * Affiche un menu avec 4 options et boucle jusqu'à ce qu'une action valide
+     * soit choisie. Gère les erreurs de saisie (lettres au lieu de nombres)
+     * et les choix hors limites.
+     * 
+     * Pour chaque type d'action, appelle une méthode privée ask...() qui gère
+     * les détails de l'interaction spécifique. Si l'utilisateur annule (retour 0),
+     * la méthode ask...() retourne null et le menu principal est réaffiché.
+     * 
+     * @param board le plateau de jeu (pour consulter les cartes et jetons disponibles)
+     * @return l'action choisie et validée par le joueur
      */
     @Override
     public Action chooseAction(Board board) {
@@ -37,11 +63,13 @@ public class HumanPlayer extends Player {
             Game.display.out.println("2. Prendre 3 jetons différents");
             Game.display.out.println("3. Acheter une carte");
             Game.display.out.println("4. Passer votre tour");
-            Game.display.out.println("Votre choix (1-4) : ");
+            Game.display.out.print("Votre choix (1-4) : ");
             
             try {
                 int choice = scanner.nextInt();
                 scanner.nextLine();  // Consommer le retour à la ligne
+                Game.display.out.print(choice);
+                Game.display.out.println();
                 
                 switch (choice) {
                     case 1:
@@ -63,8 +91,18 @@ public class HumanPlayer extends Player {
     }
     
     /**
-     * Demande au joueur de choisir 2 jetons identiques
-     * @return l'action choisie, ou null pour retour au menu
+     * Gère l'interaction pour prendre 2 jetons identiques.
+     * 
+     * Affiche toutes les ressources disponibles avec leurs quantités, demande
+     * au joueur de choisir un type, vérifie que le plateau a au moins 4 jetons
+     * de ce type, et demande confirmation avant de créer l'action.
+     * 
+     * L'utilisateur peut taper 0 à tout moment pour annuler et retourner au menu principal.
+     * En cas d'erreur (ressource invalide ou pas assez de jetons), propose de réessayer.
+     * 
+     * @param scanner le scanner pour lire les entrées utilisateur
+     * @param board le plateau de jeu pour vérifier les disponibilités
+     * @return l'action PickSameTokensAction créée, ou null pour retour au menu
      */
     private Action askPickSameTokens(Scanner scanner, Board board) {
         Game.display.out.println("\n=== PRENDRE 2 JETONS IDENTIQUES ===");
@@ -73,9 +111,10 @@ public class HumanPlayer extends Player {
             Game.display.out.println("- " + res.toString() + " (" + res.toSymbol() + ") : " + board.getNbResource(res) + " jetons");
         }
         
-        Game.display.out.println("\nQuelle ressource voulez-vous prendre ? (D/S/E/R/O ou 0 pour retour) : ");
+        Game.display.out.print("\nQuelle ressource voulez-vous prendre ? (D/S/E/R/O ou 0 pour retour) : ");
         String input = scanner.nextLine().trim().toUpperCase();
         Game.display.out.print(input);
+        Game.display.out.println();
         
         if (input.equals("0")) {
             Game.display.out.println("→ Retour au menu principal\n");
@@ -91,16 +130,22 @@ public class HumanPlayer extends Player {
         
         // ← AFFICHER LE CHOIX IMMÉDIATEMENT
         Game.display.out.println("→ Vous avez choisi : " + res.toSymbol());
+        Game.display.out.println();
+        
+        // Récapitulatif final
+        Game.display.out.println("✓ Récapitulatif - Vous prenez : 2 JETONS " + res.toSymbol());
+        Game.display.out.println();
         
         // Confirmation finale
         String finalConfirm = "";
         while (finalConfirm.isEmpty()) {
-            Game.display.out.println("Confirmer cette action ? (O/N) : ");
+            Game.display.out.print("Confirmer cette action ? (O/N) : ");
             
             finalConfirm = scanner.nextLine().trim().toUpperCase();
         }
 
         Game.display.out.print(finalConfirm);
+        Game.display.out.println();
         
         if (!finalConfirm.equals("O")) {
             Game.display.out.println("→ Action annulée, retour au menu principal\n");
@@ -111,12 +156,13 @@ public class HumanPlayer extends Player {
             Game.display.out.println("❌ Impossible ! Il faut au moins 4 jetons de ce type.");
             String retry = "";
             while (retry.isEmpty()) {
-                Game.display.out.println("Voulez-vous réessayer ? (O/N) : ");
+                Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
                 
                 retry = scanner.nextLine().trim().toUpperCase();
             }
 
             Game.display.out.print(retry);
+            Game.display.out.println();
             if (retry.equals("O")) {
                 return askPickSameTokens(scanner, board);
             } else {
@@ -126,15 +172,28 @@ public class HumanPlayer extends Player {
         }
         
         Game.display.out.println("✓ Action confirmée !\n");
-        Game.display.out.println("✓ Vous prenez 2 jetons " + res.toSymbol() + "\n");
         return new PickSameTokensAction(res);
     }
 
 
     
     /**
-     * Demande au joueur de choisir 3 jetons différents
-     * @return l'action choisie, ou null pour retour au menu
+     * Gère l'interaction pour prendre 3 jetons différents.
+     * 
+     * Demande au joueur de choisir 3 types de ressources différents un par un.
+     * Gère le cas spécial où moins de 3 types sont disponibles sur le plateau
+     * (amélioration personnelle pour les fins de partie).
+     * 
+     * Validations effectuées :
+     * - Ressource valide (D/S/E/R/O)
+     * - Ressource disponible sur le plateau (au moins 1 jeton)
+     * - Ressource non déjà choisie (les 3 doivent être différentes)
+     * 
+     * Affiche un récapitulatif et demande confirmation finale avant de créer l'action.
+     * 
+     * @param scanner le scanner pour lire les entrées utilisateur
+     * @param board le plateau de jeu pour vérifier les disponibilités
+     * @return l'action PickDiffTokensAction créée, ou null pour retour au menu
      */
     private Action askPickDiffTokens(Scanner scanner, Board board) {
         List<Resource> chosen = new ArrayList<>();
@@ -156,15 +215,47 @@ public class HumanPlayer extends Player {
             Game.display.out.println("⚠️  Attention : Il n'y a que " + nbAvailable + " type(s) de ressources disponibles.");
             String confirm = "";
             while (confirm.isEmpty()) {
-                Game.display.out.println("Voulez-vous prendre seulement " + nbAvailable + " jeton(s) ? (O/N) : ");
+                Game.display.out.print("Voulez-vous prendre seulement " + nbAvailable + " jeton(s) ? (O/N) : ");
                 
                 confirm = scanner.nextLine().trim().toUpperCase();
             }
             Game.display.out.print(confirm);
-            
+            Game.display.out.println();
             if (!confirm.equals("O")) {
                 Game.display.out.println("→ Retour au menu principal\n");
                 return null;
+            } else {
+                List<Resource> available = board.getResources().getAvailableResources();
+                for (Resource res : available){
+                    chosen.add(res);
+                }
+                
+                // Récapitulatif final
+                Game.display.out.print("✓ Récapitulatif - Vous prenez : ");
+                for (Resource r : chosen) {
+                    Game.display.out.print(r.toSymbol() + " ");
+                }
+                Game.display.out.println();
+                
+                
+                // Confirmation finale
+                String finalConfirm = "";
+                while (finalConfirm.isEmpty()) {
+                    Game.display.out.print("\nConfirmer cette action ? (O/N) : ");
+                    
+                    finalConfirm = scanner.nextLine().trim().toUpperCase();
+                }
+                
+                Game.display.out.print(finalConfirm);
+                Game.display.out.println();
+                
+                if (!finalConfirm.equals("O")) {
+                    Game.display.out.println("→ Action annulée, retour au menu principal\n");
+                    return null;
+                } else {
+                    Game.display.out.println("✓ Action confirmée !\n");
+                    return new PickDiffTokensAction(chosen);
+                } 
             }
         } else {
             Game.display.out.println("Choisissez 3 ressources différentes (ou tapez 0 pour annuler)\n");
@@ -172,12 +263,13 @@ public class HumanPlayer extends Player {
         
         // Demander le nombre approprié de ressources (max 3, ou moins si pas assez)
         int nbToChoose = Math.min(3, nbAvailable);
+        Game.display.out.println();
         
         for (int i = 0; i < nbToChoose; i++) {
-            Game.display.out.println("Ressource " + (i + 1) + "/" + nbToChoose + " (D/S/E/R/O ou 0 pour annuler) : ");
+            Game.display.out.print("Ressource " + (i + 1) + "/" + nbToChoose + " (D/S/E/R/O ou 0 pour annuler) : ");
             String input = scanner.nextLine().trim().toUpperCase();
             Game.display.out.print(input);
-            
+            Game.display.out.println();
             if (input.equals("0")) {
                 Game.display.out.println("→ Retour au menu principal\n");
                 return null;
@@ -210,7 +302,7 @@ public class HumanPlayer extends Player {
         }
         
         // Récapitulatif final
-        Game.display.out.println("✓ Récapitulatif - Vous prenez : ");
+        Game.display.out.print("✓ Récapitulatif - Vous prenez : ");
         for (Resource r : chosen) {
             Game.display.out.print(r.toSymbol() + " ");
         }
@@ -220,11 +312,13 @@ public class HumanPlayer extends Player {
         // Confirmation finale
         String finalConfirm = "";
         while (finalConfirm.isEmpty()) {
-            Game.display.out.println("\nConfirmer cette action ? (O/N) : ");
+            Game.display.out.print("\nConfirmer cette action ? (O/N) : ");
             
             finalConfirm = scanner.nextLine().trim().toUpperCase();
         }
-
+        
+        Game.display.out.print(finalConfirm);
+        Game.display.out.println();
         
         if (!finalConfirm.equals("O")) {
             Game.display.out.println("→ Action annulée, retour au menu principal\n");
@@ -236,12 +330,13 @@ public class HumanPlayer extends Player {
             Game.display.out.println("❌ Impossible ! Certaines ressources ne sont plus disponibles.");
             String retry = "";
             while (retry.isEmpty()) {
-                Game.display.out.println("Voulez-vous réessayer ? (O/N) : ");
+                Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
                 
                 retry = scanner.nextLine().trim().toUpperCase();
             }
 
             Game.display.out.print(retry);
+            Game.display.out.println();
             if (retry.equals("O")) {
                 return askPickDiffTokens(scanner, board);
             } else {
@@ -257,15 +352,29 @@ public class HumanPlayer extends Player {
 
     
     /**
-     * Demande au joueur de choisir une carte à acheter
-     * @return l'action choisie, ou null pour retour au menu
+     * Gère l'interaction pour acheter une carte.
+     * 
+     * Demande les coordonnées de la carte (niveau 1-3 et colonne 1-4), vérifie
+     * qu'une carte existe à cette position, et vérifie que le joueur a suffisamment
+     * de ressources (jetons + bonus) pour l'acheter.
+     * 
+     * En cas d'échec d'achat, affiche un détail complet :
+     * - Les ressources du joueur (jetons + bonus)
+     * - Le coût requis de la carte
+     * Ce qui permet au joueur de comprendre ce qui lui manque.
+     * 
+     * @param scanner le scanner pour lire les entrées utilisateur
+     * @param board le plateau de jeu pour récupérer la carte
+     * @return l'action BuyCardAction créée, ou null pour retour au menu
      */
     private Action askBuyCard(Scanner scanner, Board board) {
         Game.display.out.println("\n--- Achat de carte (tapez 0 pour annuler) ---");
-        Game.display.out.println("Niveau de la carte (1-3 ou 0 pour retour) : ");
+        
+        Game.display.out.print("Niveau de la carte (1-3 ou 0 pour retour) : ");
         
         String tierInput = scanner.nextLine();
         Game.display.out.print(tierInput);
+        Game.display.out.println();
         
         // Retour au menu
         if (tierInput.equals("0")) {
@@ -280,19 +389,21 @@ public class HumanPlayer extends Player {
             return askBuyCard(scanner, board);
         }
         
-        Game.display.out.println("Colonne (1-4 ou 0 pour annuler) : ");
+        Game.display.out.print("Colonne (1-4 ou 0 pour annuler) : ");
+        
         String colInput = scanner.nextLine();
         Game.display.out.print(colInput);
+        Game.display.out.println();
         
         // Confirmation finale
         String finalConfirm = "";
         while (finalConfirm.isEmpty()) {
-            Game.display.out.println("\nConfirmer cette action ? (O/N) : ");
+            Game.display.out.print("\nConfirmer cette action ? (O/N) : ");
             
             finalConfirm = scanner.nextLine().trim().toUpperCase();
         }
         Game.display.out.print(finalConfirm);
-        
+        Game.display.out.println();
         if (!finalConfirm.equals("O")) {
             Game.display.out.println("→ Action annulée, retour au menu principal\n");
             return null;
@@ -315,12 +426,14 @@ public class HumanPlayer extends Player {
             Game.display.out.println("Coordonnées invalides !");
             String retry = "";
             while (retry.isEmpty()) {
-                Game.display.out.println("Voulez-vous réessayer ? (O/N) : ");
+                Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
                 
                 retry = scanner.nextLine().trim().toUpperCase();
             }
 
             Game.display.out.print(retry);
+            Game.display.out.println();
+
             if (retry.equals("O")) {
                 return askBuyCard(scanner, board);
             } else {
@@ -334,12 +447,14 @@ public class HumanPlayer extends Player {
             Game.display.out.println("Il n'y a pas de carte à cette position !");
             String retry = "";
             while (retry.isEmpty()) {
-                Game.display.out.println("Voulez-vous réessayer ? (O/N) : ");
+                Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
                 
                 retry = scanner.nextLine().trim().toUpperCase();
             }
 
             Game.display.out.print(retry);
+            Game.display.out.println();
+
             if (retry.equals("O")) {
                 return askBuyCard(scanner, board);
             } else {
@@ -370,9 +485,10 @@ public class HumanPlayer extends Player {
                 }
             }
             
-            Game.display.out.println("\nVoulez-vous choisir une autre carte ? (O/N) : ");
+            Game.display.out.print("\nVoulez-vous choisir une autre carte ? (O/N) : ");
             String retry = scanner.nextLine().trim().toUpperCase();
             Game.display.out.print(retry);
+            Game.display.out.println();
             if (retry.equals("O")) {
                 return askBuyCard(scanner, board);
             } else {
@@ -386,7 +502,11 @@ public class HumanPlayer extends Player {
 
     
     /**
-     * Convertit une lettre en Resource
+     * Convertit une lettre en énumération Resource.
+     * Méthode utilitaire pour parser les entrées utilisateur (D/S/E/R/O).
+     * 
+     * @param input la lettre saisie par l'utilisateur (D, S, E, R ou O)
+     * @return la Resource correspondante, ou null si l'entrée est invalide
      */
     private Resource parseResource(String input) {
         switch (input) {
@@ -400,7 +520,17 @@ public class HumanPlayer extends Player {
     }
     
     /**
-     * Demande au joueur quels jetons défausser
+     * Demande au joueur quels jetons défausser pour revenir à 10.
+     * 
+     * Affiche les jetons actuels du joueur et demande de choisir un par un
+     * les jetons à défausser jusqu'à atteindre la limite de 10.
+     * 
+     * Validations :
+     * - Ressource valide (D/S/E/R/O)
+     * - Le joueur possède encore ce type de jeton
+     * - Tient compte des jetons déjà choisis pour défausse
+     * 
+     * @return un objet Resources contenant les quantités à défausser de chaque type
      */
     @Override
     public Resources chooseDiscardingTokens() {
@@ -421,9 +551,10 @@ public class HumanPlayer extends Player {
         }
         
         for (int i = 0; i < toRemove; i++) {
-            Game.display.out.println("Jeton " + (i + 1) + " à défausser (D/S/E/R/O) : ");
+            Game.display.out.print("Jeton " + (i + 1) + " à défausser (D/S/E/R/O) : ");
             String input = scanner.nextLine().trim().toUpperCase();
             Game.display.out.print(input);
+            Game.display.out.println();
             
             Resource res = parseResource(input);
             

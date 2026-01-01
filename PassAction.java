@@ -1,22 +1,36 @@
 /**
- * Action PassAction
- * Le joueur passe son tour sans rien faire
- * Utilisée quand aucune autre action n'est possible
+ * Action de passage de tour sans effectuer d'opération.
+ * 
+ * Cette action est utilisée quand un joueur ne peut ou ne souhaite effectuer aucune autre action.
+ * Elle peut survenir dans plusieurs situations :
+ * - Le plateau n'a pas assez de jetons disponibles pour en prendre
+ * - Le joueur ne peut acheter aucune carte visible
+ * - Le joueur humain choisit volontairement de ne rien faire
+ * - Le robot n'a trouvé aucune action possible selon sa stratégie
+ * 
+ * C'est l'action la plus simple : elle ne modifie rien à l'état du jeu,
+ * elle fait simplement passer le tour au joueur suivant.
  * 
  * @author FONFREIDE Quentin
- * @version 1.0
+ * @version 01/01/2026
  */
 public class PassAction implements Action {
     
     /**
-     * Constructeur
+     * Constructeur.
+     * Aucun paramètre nécessaire car cette action ne stocke aucune donnée.
      */
     public PassAction() {
         // Rien à initialiser
     }
     
     /**
-     * Exécute l'action : ne fait rien
+     * Exécute l'action : ne fait rien.
+     * 
+     * Cette méthode est volontairement vide. Passer son tour signifie
+     * ne rien changer à l'état du jeu : ni le plateau ni le joueur
+     * ne sont modifiés.
+     * 
      * @param board le plateau de jeu (non utilisé)
      * @param player le joueur (non utilisé)
      */
@@ -26,8 +40,9 @@ public class PassAction implements Action {
     }
     
     /**
-     * Représentation textuelle
-     * @return description de l'action
+     * Retourne une description simple de l'action.
+     * 
+     * @return la chaîne "Passer le tour"
      */
     @Override
     public String toString() {

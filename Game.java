@@ -1,14 +1,32 @@
-/*
- * @author    FONFREIDE Quentin
- * @version     1.2
- * @since       1.1
- */
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
+/**
+ * Classe principale du jeu Splendor - Orchestre le déroulement complet d'une partie.
+ * 
+ * Cette classe est le chef d'orchestre du projet. Elle coordonne tous les éléments
+ * créés précédemment (Board, Player, Actions) pour créer une partie jouable du début
+ * à la fin. Ses responsabilités incluent :
+ * - Initialisation d'une nouvelle partie (plateau + joueurs)
+ * - Gestion de la boucle de jeu (tours à tour de rôle)
+ * - Application des règles (défausse obligatoire, limite de jetons)
+ * - Détection de la fin de partie (15 points de prestige)
+ * - Annonce du gagnant avec gestion des égalités
+ * 
+ * La classe utilise un objet Display statique pour gérer l'affichage dans le terminal
+ * et la lecture des entrées utilisateur. Cet objet est accessible depuis toutes les
+ * autres classes pour faciliter l'interaction.
+ * 
+ * Améliorations personnelles :
+ * - Configuration flexible du nombre de joueurs humains/robots
+ * - Demande personnalisée des noms de tous les joueurs
+ * - Messages et affichages clairs et structurés
+ * - Gestion robuste des erreurs avec try-catch
+ * 
+ * @author FONFREIDE Quentin
+ * @version 01/01/2026
+ */
 public class Game {
     
     /* L'affichage et la lecture d'entrée avec l'interface de jeu se fera entièrement via l'attribut display de la classe Game.
@@ -19,12 +37,37 @@ public class Game {
      *    - demande d'entrée utilisateur: new Scanner(Game.display.in);
      */
     
+    /**
+     * Dimensions de la fenêtre d'affichage.
+     * ROWS_BOARD : lignes pour le plateau (en haut)
+     * ROWS_CONSOLE : lignes pour la console interactive (en bas)
+     * COLS : colonnes totales
+     */
     private static final int ROWS_BOARD=36, ROWS_CONSOLE=8, COLS=82;
+    
+    /**
+     * Instance unique de Display utilisée par tout le programme.
+     * Accessible statiquement depuis toutes les classes pour l'affichage et la saisie.
+     */
     public static final  Display display = new Display(ROWS_BOARD, ROWS_CONSOLE, COLS);
 
+    /**
+     * Plateau de jeu contenant les cartes et les jetons disponibles.
+     */
     private Board board;
+    
+    /**
+     * Liste des joueurs participant à la partie (humains et robots).
+     * L'ordre dans cette liste détermine l'ordre de jeu.
+     */
     private List<Player> players;
 
+    /**
+     * Point d'entrée du programme.
+     * Demande le nombre de joueurs, crée une partie, la lance, et ferme l'affichage.
+     * 
+     * @param args arguments de la ligne de commande (non utilisés)
+     */
     public static void main(String[] args) {
         display.outBoard.println("╔═══════════════════════════════════╗");
         display.outBoard.println("║   Bienvenue sur SPLENDOR !        ║");
@@ -39,7 +82,8 @@ public class Game {
             try {
                 nbPlayers = scanner.nextInt();
                 scanner.nextLine();
-                
+                display.out.print(nbPlayers);
+                display.out.println();
                 if (nbPlayers >= 2 && nbPlayers <= 4) {
                     validInput = true;
                 } else {
@@ -50,7 +94,6 @@ public class Game {
                 scanner.nextLine();
             }
         }
-        
         Game game = new Game(nbPlayers);  
         game.play();                      
         display.close();
@@ -58,9 +101,17 @@ public class Game {
 
 
     /**
-     * Constructeur de Game
-     * Initialise une partie avec le nombre de joueurs spécifié
-     * Demande le nombre de joueurs humains et robots, puis leurs noms
+     * Constructeur de Game - Initialise une partie complète.
+     * 
+     * Ce constructeur met en place tout ce qui est nécessaire pour jouer :
+     * 1. Valide le nombre de joueurs (2 à 4)
+     * 2. Demande la répartition humains/robots (amélioration personnelle)
+     * 3. Demande les noms de tous les joueurs
+     * 4. Initialise le plateau de jeu (lit le CSV, crée les cartes, les mélange)
+     * 5. Crée tous les joueurs dans l'ordre de jeu
+     * 
+     * Version de base : 1 joueur humain + robots
+     * Amélioration personnelle : configuration flexible avec n'importe quelle combinaison
      * 
      * @param nbOfPlayers nombre total de joueurs (2, 3 ou 4)
      * @throws IllegalArgumentException si le nombre de joueurs n'est pas entre 2 et 4
@@ -75,7 +126,9 @@ public class Game {
         
         // ========== DEMANDER LA RÉPARTITION HUMAINS/ROBOTS ==========
         display.out.println("\n=== Bienvenue dans Splendor ===");
-        display.out.println("Nombre total de joueurs : " + nbOfPlayers);
+        display.out.println();
+        display.out.println("Nombre total de joueurs : " + nbOfPlayers);        
+        display.out.println();
         
         int nbHumans = 0;
         boolean validInput = false;
@@ -85,7 +138,8 @@ public class Game {
             try {
                 nbHumans = scanner.nextInt();
                 scanner.nextLine();  // Consommer le retour à la ligne
-                
+                display.out.print(nbHumans);
+                display.out.println();
                 if (nbHumans >= 0 && nbHumans <= nbOfPlayers) {
                     validInput = true;
                 } else {
@@ -118,6 +172,8 @@ public class Game {
             for (int i = 0; i < nbHumans; i++) {
                 display.out.print("Nom du joueur humain " + (i + 1) + " : ");
                 String name = scanner.nextLine();
+                display.out.print(name);
+                display.out.println();
                 players.add(new HumanPlayer(playerID, name));
                 display.out.println("✓ Joueur humain '" + name + "' créé");
                 playerID++;
@@ -130,6 +186,8 @@ public class Game {
             for (int i = 0; i < nbRobots; i++) {
                 display.out.print("Nom du robot " + (i + 1) + " : ");
                 String name = scanner.nextLine();
+                display.out.print(name);
+                display.out.println();
                 players.add(new DumbRobotPlayer(playerID, name));
                 display.out.println("✓ Robot '" + name + "' créé");
                 playerID++;
@@ -144,15 +202,23 @@ public class Game {
 
 
 
+    /**
+     * Retourne le nombre de joueurs dans la partie.
+     * 
+     * @return le nombre de joueurs (taille de la liste players)
+     */
     public int getNbPlayers(){
         return players.size();
     }
     
     /**
-     * Vérifie si la partie est terminée
-     * La partie se termine quand un joueur atteint 15 points de prestige
+     * Vérifie si la partie est terminée.
      * 
-     * @return true si un joueur a au moins 15 points, false sinon
+     * La condition de fin de partie dans Splendor est qu'au moins un joueur
+     * ait atteint ou dépassé 15 points de prestige. Dès qu'un joueur atteint
+     * ce seuil, la partie se termine à la fin du tour en cours.
+     * 
+     * @return true si au moins un joueur a 15 points ou plus, false sinon
      */
     private boolean isGameOver() {
         for (Player player : players) {
@@ -164,9 +230,16 @@ public class Game {
     }
     
     /**
-     * Annonce le gagnant de la partie
-     * En cas d'égalité : le joueur avec le moins de cartes achetées gagne
-     * En cas d'égalité totale : partie nulle
+     * Annonce le gagnant de la partie et gère les égalités.
+     * 
+     * Processus de détermination du gagnant :
+     * 1. Trouver le score maximum parmi tous les joueurs
+     * 2. Lister tous les joueurs ayant ce score (candidats)
+     * 3. En cas d'égalité : départage par le nombre de cartes achetées
+     *    - Le joueur ayant le MOINS de cartes gagne (efficacité)
+     * 4. Si l'égalité persiste : partie nulle
+     * 
+     * Affiche le résultat avec émojis et détails du score final.
      */
     private void gameOver() {
         display.out.println("\n" + "=".repeat(50));
@@ -236,6 +309,17 @@ public class Game {
     }
 
     
+    /**
+     * Affiche l'état complet du jeu dans la zone supérieure du terminal.
+     * 
+     * Assemble visuellement :
+     * - Le plateau de jeu (gauche) : piles, cartes visibles, ressources
+     * - Les informations des joueurs (droite) : points, jetons, bonus
+     * 
+     * Le joueur actuel est marqué par une flèche → devant son nom.
+     * 
+     * @param currentPlayer indice du joueur dont c'est le tour
+     */
     private void display(int currentPlayer){
         String[] boardDisplay = board.toStringArray();
         String[] playerDisplay = Display.emptyStringArray(0, 0);
@@ -254,8 +338,18 @@ public class Game {
     }
 
     /**
-     * Lance la boucle principale du jeu
-     * Les joueurs jouent à tour de rôle jusqu'à ce qu'un gagnant soit déterminé
+     * Lance la boucle principale du jeu - Le cœur du programme.
+     * 
+     * Cette méthode fait tourner la partie du début à la fin :
+     * 1. Affiche l'état actuel du jeu
+     * 2. Le joueur actuel joue son tour (choix et exécution d'une action)
+     * 3. Gestion de la défausse obligatoire si > 10 jetons
+     * 4. Pause d'une seconde pour laisser le temps de lire
+     * 5. Passage au joueur suivant (rotation circulaire avec modulo)
+     * 6. Répète jusqu'à ce qu'un joueur atteigne 15 points
+     * 7. Affiche l'état final et annonce le gagnant
+     * 
+     * La boucle utilise des try-catch pour rendre le jeu robuste face aux erreurs.
      */
     public void play() {
         int currentPlayer = 0;
@@ -301,10 +395,18 @@ public class Game {
 
 
     /**
-     * Gère le tour d'un joueur
-     * Le joueur choisit une action, l'exécute, et le résultat est affiché
+     * Gère le tour complet d'un joueur.
      * 
-     * @param currentPlayer indice du joueur actuel
+     * Processus :
+     * 1. Récupère le joueur actuel
+     * 2. Le joueur choisit une action (via chooseAction qui peut reboucler si annulation)
+     * 3. L'action est exécutée (modifie l'état du plateau et/ou du joueur)
+     * 4. L'action effectuée est affichée dans la console
+     * 
+     * Grâce au polymorphisme, cette méthode fonctionne de la même façon pour
+     * un humain ou un robot, chacun ayant sa propre implémentation de chooseAction().
+     * 
+     * @param currentPlayer indice du joueur dans la liste players
      */
     private void move(int currentPlayer) {
         Player player = players.get(currentPlayer);
@@ -326,10 +428,19 @@ public class Game {
 
 
     /**
-     * Gère la défausse de jetons si le joueur en a plus de 10
-     * Le joueur doit défausser jusqu'à revenir à 10 jetons maximum
+     * Gère la défausse obligatoire de jetons si le joueur en possède plus de 10.
      * 
-     * @param currentPlayer indice du joueur actuel
+     * Règle du jeu : un joueur ne peut jamais avoir plus de 10 jetons.
+     * Si après son action il dépasse cette limite, il doit défausser l'excédent.
+     * 
+     * Cette méthode boucle tant que le joueur a plus de 10 jetons :
+     * 1. Affiche un avertissement avec le nombre actuel
+     * 2. Le joueur choisit quels jetons défausser (via chooseDiscardingTokens)
+     * 3. Crée et exécute une DiscardTokensAction
+     * 4. Affiche les jetons défaussés
+     * 5. Vérifie à nouveau (au cas où le joueur ait défaussé moins que nécessaire)
+     * 
+     * @param currentPlayer indice du joueur dans la liste players
      */
     private void discardToken(int currentPlayer) {
         Player player = players.get(currentPlayer);

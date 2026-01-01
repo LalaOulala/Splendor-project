@@ -1,5 +1,6 @@
 #BlueJ class context
 comment0.target=Display
+comment0.text=\r\n\ Classe\ utilitaire\ pour\ g\u00E9rer\ l'affichage\ graphique\ du\ jeu\ Splendor.\r\n\ \r\n\ Cette\ classe\ cr\u00E9e\ une\ interface\ graphique\ Swing\ compos\u00E9e\ de\ deux\ zones\ principales\ \:\r\n\ une\ zone\ sup\u00E9rieure\ pour\ afficher\ l'\u00E9tat\ du\ plateau\ de\ jeu,\ et\ une\ zone\ inf\u00E9rieure\r\n\ pour\ la\ console\ d'interaction\ avec\ le\ joueur.\ Elle\ fournit\ des\ flux\ d'entr\u00E9e/sortie\r\n\ personnalis\u00E9s\ permettant\ d'utiliser\ les\ m\u00E9thodes\ print/println\ comme\ avec\ System.out,\r\n\ et\ de\ lire\ les\ entr\u00E9es\ utilisateur\ comme\ avec\ Scanner.\r\n\ \r\n\ Cette\ classe\ est\ fournie\ par\ l'enseignant\ et\ n'a\ pas\ besoin\ d'\u00EAtre\ modifi\u00E9e\ ni\ comprise\ en\ profondeur.\r\n\ Elle\ g\u00E8re\ automatiquement\ l'affichage\ des\ caract\u00E8res\ Unicode\ n\u00E9cessaires\ pour\r\n\ le\ rendu\ visuel\ du\ jeu\ (symboles\ de\ ressources,\ bordures\ ASCII,\ etc.).\r\n\ \r\n\ @author\ Fourni\ par\ l'enseignant\r\n\ @version\ 01/01/2026\r\n
 comment1.params=str
 comment1.target=int\ displayedLength(java.lang.String)
 comment10.params=rowsBoard\ rowsConsole\ cols

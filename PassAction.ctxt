@@ -1,13 +1,13 @@
 #BlueJ class context
 comment0.target=PassAction
-comment0.text=\r\n\ Action\ PassAction\r\n\ Le\ joueur\ passe\ son\ tour\ sans\ rien\ faire\r\n\ Utilis\u00E9e\ quand\ aucune\ autre\ action\ n'est\ possible\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 1.0\r\n
+comment0.text=\r\n\ Action\ de\ passage\ de\ tour\ sans\ effectuer\ d'op\u00E9ration.\r\n\ \r\n\ Cette\ action\ est\ utilis\u00E9e\ quand\ un\ joueur\ ne\ peut\ ou\ ne\ souhaite\ effectuer\ aucune\ autre\ action.\r\n\ Elle\ peut\ survenir\ dans\ plusieurs\ situations\ \:\r\n\ -\ Le\ plateau\ n'a\ pas\ assez\ de\ jetons\ disponibles\ pour\ en\ prendre\r\n\ -\ Le\ joueur\ ne\ peut\ acheter\ aucune\ carte\ visible\r\n\ -\ Le\ joueur\ humain\ choisit\ volontairement\ de\ ne\ rien\ faire\r\n\ -\ Le\ robot\ n'a\ trouv\u00E9\ aucune\ action\ possible\ selon\ sa\ strat\u00E9gie\r\n\ \r\n\ C'est\ l'action\ la\ plus\ simple\ \:\ elle\ ne\ modifie\ rien\ \u00E0\ l'\u00E9tat\ du\ jeu,\r\n\ elle\ fait\ simplement\ passer\ le\ tour\ au\ joueur\ suivant.\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 01/01/2026\r\n
 comment1.params=
 comment1.target=PassAction()
-comment1.text=\r\n\ Constructeur\r\n
+comment1.text=\r\n\ Constructeur.\r\n\ Aucun\ param\u00E8tre\ n\u00E9cessaire\ car\ cette\ action\ ne\ stocke\ aucune\ donn\u00E9e.\r\n
 comment2.params=board\ player
 comment2.target=void\ process(Board,\ Player)
-comment2.text=\r\n\ Ex\u00E9cute\ l'action\ \:\ ne\ fait\ rien\r\n\ @param\ board\ le\ plateau\ de\ jeu\ (non\ utilis\u00E9)\r\n\ @param\ player\ le\ joueur\ (non\ utilis\u00E9)\r\n
+comment2.text=\r\n\ Ex\u00E9cute\ l'action\ \:\ ne\ fait\ rien.\r\n\ \r\n\ Cette\ m\u00E9thode\ est\ volontairement\ vide.\ Passer\ son\ tour\ signifie\r\n\ ne\ rien\ changer\ \u00E0\ l'\u00E9tat\ du\ jeu\ \:\ ni\ le\ plateau\ ni\ le\ joueur\r\n\ ne\ sont\ modifi\u00E9s.\r\n\ \r\n\ @param\ board\ le\ plateau\ de\ jeu\ (non\ utilis\u00E9)\r\n\ @param\ player\ le\ joueur\ (non\ utilis\u00E9)\r\n
 comment3.params=
 comment3.target=java.lang.String\ toString()
-comment3.text=\r\n\ Repr\u00E9sentation\ textuelle\r\n\ @return\ description\ de\ l'action\r\n
+comment3.text=\r\n\ Retourne\ une\ description\ simple\ de\ l'action.\r\n\ \r\n\ @return\ la\ cha\u00EEne\ "Passer\ le\ tour"\r\n
 numComments=4

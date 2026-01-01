@@ -1,47 +1,64 @@
 /**
- * Action DiscardTokensAction
- * Défausser des jetons quand le joueur en possède plus de 10
- * Les jetons défaussés retournent sur le plateau
+ * Action de défausse de jetons lorsque le joueur en possède plus de 10.
+ * 
+ * Selon les règles du jeu, un joueur ne peut pas posséder plus de 10 jetons.
+ * Si cette limite est dépassée après avoir pris des jetons, il doit défausser
+ * l'excédent. Les jetons défaussés retournent sur le plateau et sont à nouveau
+ * disponibles pour tous les joueurs.
+ * 
+ * Cette action est obligatoire et déclenchée automatiquement par la classe Game
+ * après chaque tour si le joueur a plus de 10 jetons. Le joueur peut défausser
+ * un ou plusieurs jetons jusqu'à revenir à 10 (ou moins).
  * 
  * @author FONFREIDE Quentin
- * @version 1.0
+ * @version 01/01/2026
  */
 public class DiscardTokensAction implements Action {
     
-    private Resources toDiscard;  // Les ressources à défausser
+    /**
+     * Ressources à défausser.
+     * Contient les quantités de chaque type de jeton que le joueur choisit de rendre.
+     */
+    private Resources toDiscard;
     
     /**
-     * Constructeur
-     * @param toDiscard les ressources à défausser
+     * Constructeur.
+     * 
+     * @param toDiscard les ressources que le joueur souhaite défausser
      */
     public DiscardTokensAction(Resources toDiscard) {
         this.toDiscard = toDiscard;
     }
     
     /**
-     * Exécute l'action : retire les jetons du joueur et les remet sur le plateau
-     * @param board le plateau de jeu
-     * @param player le joueur qui effectue l'action
+     * Exécute l'action : retire les jetons du joueur et les remet sur le plateau.
+     * 
+     * Pour chaque type de ressource à défausser, effectue un transfert du joueur vers le plateau.
+     * C'est l'opération inverse de prendre des jetons : le joueur perd des jetons et le plateau
+     * les récupère.
+     * 
+     * @param board le plateau de jeu (reçoit les jetons défaussés)
+     * @param player le joueur qui défausse les jetons
      */
     @Override
     public void process(Board board, Player player) {
-        // Pour chaque type de ressource
         for (Resource res : Resource.values()) {
             int nb = toDiscard.getNbResource(res);
             
             if (nb > 0) {
-                // Retirer les jetons du joueur
                 player.updateNbResource(res, -nb);
-                
-                // Remettre les jetons sur le plateau
                 board.updateNbResource(res, nb);
             }
         }
     }
     
     /**
-     * Représentation textuelle
-     * @return description de l'action
+     * Retourne une description de l'action avec les jetons défaussés.
+     * 
+     * Affiche uniquement les ressources dont la quantité est supérieure à 0.
+     * Format : "Défausser : 2♦D 1♥R"
+     * 
+     * @return description de l'action avec les quantités et symboles des ressources défaussées
      */
     @Override
     public String toString() {

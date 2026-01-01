@@ -1,27 +1,43 @@
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Classe Resources - Représente une collection de ressources/jetons
- * Utilisée pour : le coût des cartes, les jetons du plateau, les jetons des joueurs
+ * Classe représentant une liste de ressources (jetons) dans le jeu Splendor.
  * 
- * Implémentation : tableau d'entiers avec ordre fixe correspondant à l'énumération Resource
+ * Cette classe est utilisée pour stocker des quantités de ressources dans trois contextes :
+ * - Le coût d'une carte de développement
+ * - Les jetons disponibles sur le plateau de jeu
+ * - Les jetons possédés par chaque joueur
  * 
- * @author [Ton nom]
- * @version 1.0
+ * Implémentation : utilise un tableau d'entiers avec un ordre fixe correspondant
+ * à l'énumération Resource (DIAMOND, SAPPHIRE, EMERALD, ONYX, RUBY).
+ * L'accès aux ressources se fait via la méthode ordinal() de l'énumération.
+ * 
+ * @author FONFREIDE Quentin
+ * @version 01/01/2026
  */
 public class Resources {
     
-    // Attribut : tableau de 5 entiers pour stocker les quantités
+    /**
+     * Tableau stockant les quantités de chaque type de ressource.
+     * Index 0 = DIAMOND, 1 = SAPPHIRE, 2 = EMERALD, 3 = ONYX, 4 = RUBY.
+     * Cet ordre correspond exactement à l'ordre de l'énumération Resource.
+     */
     private int[] resources;
     
+    
     /**
-     * Constructeur par défaut
-     * Initialise toutes les ressources à 0
+     * Constructeur par défaut.
+     * Initialise toutes les ressources à 0.
      */
     public Resources() {
-        resources = new int[5]; // Tableau de 5 cases, initialisé à [0, 0, 0, 0, 0]
+        resources = new int[5];
     }
     
     /**
-     * Constructeur avec valeurs initiales
+     * Constructeur avec valeurs initiales.
+     * Permet de créer directement un objet Resources avec des quantités spécifiques.
+     * 
      * @param diamond nombre de diamants
      * @param sapphire nombre de saphirs
      * @param emerald nombre d'émeraudes
@@ -38,17 +54,24 @@ public class Resources {
     }
     
     /**
-     * Retourne le nombre de ressources disponibles pour un type donné
-     * @param res le type de ressource
-     * @return le nombre de ressources de ce type
+     * Retourne le nombre de ressources disponibles pour un type donné.
+     * Utilise la méthode ordinal() de l'énumération pour accéder directement
+     * à l'index correspondant dans le tableau.
+     * 
+     * @param res le type de ressource à consulter
+     * @return le nombre de ressources de ce type (toujours >= 0)
      */
     public int getNbResource(Resource res) {
         return resources[res.ordinal()];
     }
     
     /**
-     * Modifie le nombre de ressources d'un type donné (mutateur)
-     * @param res le type de ressource
+     * Modifie le nombre de ressources d'un type donné (mutateur).
+     * Cette méthode est principalement utilisée lors de l'initialisation
+     * du plateau de jeu pour définir le nombre de jetons disponibles
+     * selon le nombre de joueurs.
+     * 
+     * @param res le type de ressource à modifier
      * @param nb le nouveau nombre de ressources
      */
     public void setNbResource(Resource res, int nb) {
@@ -56,15 +79,20 @@ public class Resources {
     }
     
     /**
-     * Ajoute ou retire une quantité de ressources d'un type donné
-     * @param res le type de ressource
-     * @param v la quantité à ajouter (v>0) ou retirer (v<0)
-     * CONTRAINTE : le nombre de ressources ne peut jamais être négatif
+     * Ajoute ou retire une quantité de ressources d'un type donné.
+     * Cette méthode est la plus utilisée pendant le jeu pour :
+     * - Ajouter des jetons quand un joueur les prend (v > 0)
+     * - Retirer des jetons quand un joueur paie une carte (v < 0)
+     * 
+     * CONTRAINTE IMPORTANTE : Le nombre de ressources ne peut jamais être négatif.
+     * Si le calcul donne un résultat négatif, la quantité est fixée à 0.
+     * 
+     * @param res le type de ressource à modifier
+     * @param v la quantité à ajouter si v > 0, ou à retirer si v < 0
      */
     public void updateNbResource(Resource res, int v) {
         int newValue = resources[res.ordinal()] + v;
         
-        // Contrainte : pas de ressources négatives
         if (newValue < 0) {
             resources[res.ordinal()] = 0;
         } else {
@@ -73,13 +101,15 @@ public class Resources {
     }
     
     /**
-     * Retourne la liste des types de ressources pour lesquels des ressources sont disponibles
-     * @return une liste des ressources disponibles (quantité > 0)
+     * Retourne la liste des types de ressources disponibles (quantité > 0).
+     * Cette méthode est utilisée pour afficher uniquement les ressources pertinentes
+     * et pour vérifier quelles actions sont possibles (ex : prendre 3 jetons différents).
+     * 
+     * @return une liste contenant uniquement les types de ressources dont la quantité est supérieure à 0
      */
-    public java.util.List<Resource> getAvailableResources() {
-        java.util.List<Resource> available = new java.util.ArrayList<>();
+    public List<Resource> getAvailableResources() {
+        List<Resource> available = new ArrayList<>();
         
-        // Parcourir les 5 types de ressources
         for (Resource res : Resource.values()) {
             if (getNbResource(res) > 0) {
                 available.add(res);
@@ -90,9 +120,12 @@ public class Resources {
     }
     
     /**
-     * Représentation textuelle des ressources
-     * Utile pour le débogage
-     * @return une chaîne décrivant les ressources
+     * Retourne une représentation textuelle des ressources.
+     * Affiche uniquement les ressources dont la quantité est supérieure à 0,
+     * avec leur symbole compact (ex : "3♦D 2♠S").
+     * Utile pour le débogage et les logs.
+     * 
+     * @return une chaîne décrivant les ressources disponibles avec leurs symboles
      */
     @Override
     public String toString() {
