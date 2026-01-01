@@ -1,0 +1,25 @@
+#BlueJ class context
+comment0.target=HumanPlayer
+comment0.text=\r\n\ Classe\ HumanPlayer\r\n\ Repr\u00E9sente\ un\ joueur\ humain\ qui\ interagit\ via\ le\ terminal\r\n\ Demande\ \u00E0\ l'utilisateur\ de\ choisir\ ses\ actions\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 1.0\r\n
+comment1.params=id\ name
+comment1.target=HumanPlayer(int,\ java.lang.String)
+comment1.text=\r\n\ Constructeur\r\n\ @param\ id\ identifiant\ du\ joueur\r\n\ @param\ name\ nom\ du\ joueur\r\n
+comment2.params=board
+comment2.target=Action\ chooseAction(Board)
+comment2.text=\r\n\ Demande\ au\ joueur\ humain\ de\ choisir\ une\ action\r\n\ @param\ board\ le\ plateau\ de\ jeu\r\n\ @return\ l'action\ choisie\r\n
+comment3.params=scanner\ board
+comment3.target=Action\ askPickSameTokens(java.util.Scanner,\ Board)
+comment3.text=\r\n\ Demande\ au\ joueur\ de\ choisir\ 2\ jetons\ identiques\r\n\ @return\ l'action\ choisie,\ ou\ null\ pour\ retour\ au\ menu\r\n
+comment4.params=scanner\ board
+comment4.target=Action\ askPickDiffTokens(java.util.Scanner,\ Board)
+comment4.text=\r\n\ Demande\ au\ joueur\ de\ choisir\ 3\ jetons\ diff\u00E9rents\r\n\ @return\ l'action\ choisie,\ ou\ null\ pour\ retour\ au\ menu\r\n
+comment5.params=scanner\ board
+comment5.target=Action\ askBuyCard(java.util.Scanner,\ Board)
+comment5.text=\r\n\ Demande\ au\ joueur\ de\ choisir\ une\ carte\ \u00E0\ acheter\r\n\ @return\ l'action\ choisie,\ ou\ null\ pour\ retour\ au\ menu\r\n
+comment6.params=input
+comment6.target=Resource\ parseResource(java.lang.String)
+comment6.text=\r\n\ Convertit\ une\ lettre\ en\ Resource\r\n
+comment7.params=
+comment7.target=Resources\ chooseDiscardingTokens()
+comment7.text=\r\n\ Demande\ au\ joueur\ quels\ jetons\ d\u00E9fausser\r\n
+numComments=8

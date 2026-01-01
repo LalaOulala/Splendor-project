@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=PickSameTokensAction
+comment0.text=\r\n\ Action\ PickSameTokensAction\r\n\ Prendre\ 2\ jetons\ de\ la\ m\u00EAme\ ressource\r\n\ R\u00E8gle\ \:\ possible\ seulement\ s'il\ reste\ au\ moins\ 4\ jetons\ de\ ce\ type\ sur\ le\ plateau\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 1.0\r\n
+comment1.params=resource
+comment1.target=PickSameTokensAction(Resource)
+comment1.text=\r\n\ Constructeur\r\n\ @param\ resource\ le\ type\ de\ ressource\ \u00E0\ prendre\ (2\ jetons)\r\n
+comment2.params=board\ player
+comment2.target=void\ process(Board,\ Player)
+comment2.text=\r\n\ Ex\u00E9cute\ l'action\ \:\ retire\ 2\ jetons\ du\ plateau\ et\ les\ donne\ au\ joueur\r\n\ @param\ board\ le\ plateau\ de\ jeu\r\n\ @param\ player\ le\ joueur\ qui\ effectue\ l'action\r\n
+comment3.params=
+comment3.target=java.lang.String\ toString()
+comment3.text=\r\n\ Repr\u00E9sentation\ textuelle\r\n\ @return\ description\ de\ l'action\r\n
+numComments=4

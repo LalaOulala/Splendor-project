@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=BuyCardAction
+comment0.text=\r\n\ Action\ BuyCardAction\r\n\ Acheter\ une\ carte\ de\ d\u00E9veloppement\r\n\ Le\ joueur\ paie\ le\ co\u00FBt\ (en\ tenant\ compte\ des\ bonus),\ prend\ la\ carte,\ et\ gagne\ ses\ points\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 1.0\r\n
+comment1.params=card
+comment1.target=BuyCardAction(DevCard)
+comment1.text=\r\n\ Constructeur\r\n\ @param\ card\ la\ carte\ de\ d\u00E9veloppement\ \u00E0\ acheter\r\n
+comment2.params=board\ player
+comment2.target=void\ process(Board,\ Player)
+comment2.text=\r\n\ Ex\u00E9cute\ l'action\ \:\ paie\ le\ co\u00FBt,\ prend\ la\ carte,\ gagne\ les\ points,\ remplace\ la\ carte\ sur\ le\ plateau\r\n\ @param\ board\ le\ plateau\ de\ jeu\r\n\ @param\ player\ le\ joueur\ qui\ effectue\ l'action\r\n
+comment3.params=
+comment3.target=java.lang.String\ toString()
+comment3.text=\r\n\ Repr\u00E9sentation\ textuelle\r\n\ @return\ description\ de\ l'action\r\n
+numComments=4

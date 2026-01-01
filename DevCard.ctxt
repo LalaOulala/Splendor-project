@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.target=DevCard
+comment1.params=tier\ cost\ points\ resourceType
+comment1.target=DevCard(int,\ Resources,\ int,\ Resource)
+comment1.text=\r\n\ Constructeur\ de\ DevCard\r\n\ @param\ tier\ niveau\ de\ la\ carte\ (1,\ 2\ ou\ 3)\r\n\ @param\ cost\ co\u00FBt\ en\ ressources\r\n\ @param\ points\ points\ de\ prestige\r\n\ @param\ resourceType\ type\ de\ bonus\r\n
+comment2.params=
+comment2.target=int\ getTier()
+comment2.text=\r\n\ @return\ le\ niveau\ de\ la\ carte\r\n
+comment3.params=
+comment3.target=Resources\ getCost()
+comment3.text=\r\n\ @return\ le\ co\u00FBt\ de\ la\ carte\r\n
+comment4.params=
+comment4.target=int\ getPoints()
+comment4.text=\r\n\ @return\ les\ points\ de\ prestige\r\n
+comment5.params=
+comment5.target=Resource\ getResourceType()
+comment5.text=\r\n\ @return\ le\ type\ de\ ressource\ bonus\r\n
+comment6.params=
+comment6.target=java.lang.String[]\ toStringArray()
+comment7.params=
+comment7.target=java.lang.String[]\ noCardStringArray()
+comment8.params=
+comment8.target=java.lang.String\ toString()
+numComments=9

@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=PickDiffTokensAction
+comment0.text=\r\n\ Action\ PickDiffTokensAction\r\n\ Prendre\ 3\ jetons\ de\ ressources\ diff\u00E9rentes\r\n\ R\u00E8gle\ \:\ chaque\ ressource\ doit\ \u00EAtre\ disponible\ sur\ le\ plateau\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 1.0\r\n
+comment1.params=resources
+comment1.target=PickDiffTokensAction(java.util.List)
+comment1.text=\r\n\ Constructeur\r\n\ @param\ resources\ liste\ de\ 3\ types\ de\ ressources\ diff\u00E9rentes\r\n
+comment2.params=board\ player
+comment2.target=void\ process(Board,\ Player)
+comment2.text=\r\n\ Ex\u00E9cute\ l'action\ \:\ retire\ 1\ jeton\ de\ chaque\ type\ du\ plateau\ et\ les\ donne\ au\ joueur\r\n\ @param\ board\ le\ plateau\ de\ jeu\r\n\ @param\ player\ le\ joueur\ qui\ effectue\ l'action\r\n
+comment3.params=
+comment3.target=java.lang.String\ toString()
+comment3.text=\r\n\ Repr\u00E9sentation\ textuelle\r\n\ @return\ description\ de\ l'action\r\n
+numComments=4

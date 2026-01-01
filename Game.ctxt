@@ -1,0 +1,27 @@
+#BlueJ class context
+comment0.target=Game
+comment1.params=args
+comment1.target=void\ main(java.lang.String[])
+comment2.params=nbOfPlayers
+comment2.target=Game(int)
+comment2.text=\r\n\ Constructeur\ de\ Game\r\n\ Initialise\ une\ partie\ avec\ le\ nombre\ de\ joueurs\ sp\u00E9cifi\u00E9\r\n\ Demande\ le\ nombre\ de\ joueurs\ humains\ et\ robots,\ puis\ leurs\ noms\r\n\ \r\n\ @param\ nbOfPlayers\ nombre\ total\ de\ joueurs\ (2,\ 3\ ou\ 4)\r\n\ @throws\ IllegalArgumentException\ si\ le\ nombre\ de\ joueurs\ n'est\ pas\ entre\ 2\ et\ 4\r\n
+comment3.params=
+comment3.target=int\ getNbPlayers()
+comment4.params=
+comment4.target=boolean\ isGameOver()
+comment4.text=\r\n\ V\u00E9rifie\ si\ la\ partie\ est\ termin\u00E9e\r\n\ La\ partie\ se\ termine\ quand\ un\ joueur\ atteint\ 15\ points\ de\ prestige\r\n\ \r\n\ @return\ true\ si\ un\ joueur\ a\ au\ moins\ 15\ points,\ false\ sinon\r\n
+comment5.params=
+comment5.target=void\ gameOver()
+comment5.text=\r\n\ Annonce\ le\ gagnant\ de\ la\ partie\r\n\ En\ cas\ d'\u00E9galit\u00E9\ \:\ le\ joueur\ avec\ le\ moins\ de\ cartes\ achet\u00E9es\ gagne\r\n\ En\ cas\ d'\u00E9galit\u00E9\ totale\ \:\ partie\ nulle\r\n
+comment6.params=currentPlayer
+comment6.target=void\ display(int)
+comment7.params=
+comment7.target=void\ play()
+comment7.text=\r\n\ Lance\ la\ boucle\ principale\ du\ jeu\r\n\ Les\ joueurs\ jouent\ \u00E0\ tour\ de\ r\u00F4le\ jusqu'\u00E0\ ce\ qu'un\ gagnant\ soit\ d\u00E9termin\u00E9\r\n
+comment8.params=currentPlayer
+comment8.target=void\ move(int)
+comment8.text=\r\n\ G\u00E8re\ le\ tour\ d'un\ joueur\r\n\ Le\ joueur\ choisit\ une\ action,\ l'ex\u00E9cute,\ et\ le\ r\u00E9sultat\ est\ affich\u00E9\r\n\ \r\n\ @param\ currentPlayer\ indice\ du\ joueur\ actuel\r\n
+comment9.params=currentPlayer
+comment9.target=void\ discardToken(int)
+comment9.text=\r\n\ G\u00E8re\ la\ d\u00E9fausse\ de\ jetons\ si\ le\ joueur\ en\ a\ plus\ de\ 10\r\n\ Le\ joueur\ doit\ d\u00E9fausser\ jusqu'\u00E0\ revenir\ \u00E0\ 10\ jetons\ maximum\r\n\ \r\n\ @param\ currentPlayer\ indice\ du\ joueur\ actuel\r\n
+numComments=10

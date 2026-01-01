@@ -1,0 +1,10 @@
+#BlueJ class context
+comment0.target=Action
+comment0.text=\r\n\ Interface\ Action\r\n\ Repr\u00E9sente\ une\ action\ qu'un\ joueur\ peut\ effectuer\ pendant\ son\ tour\r\n\ \r\n\ Toutes\ les\ actions\ doivent\ impl\u00E9menter\ cette\ interface\ pour\ \u00EAtre\ trait\u00E9es\r\n\ de\ mani\u00E8re\ uniforme\ dans\ la\ boucle\ de\ jeu\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 1.0\r\n
+comment1.params=board\ player
+comment1.target=void\ process(Board,\ Player)
+comment1.text=\r\n\ Ex\u00E9cute\ l'action\r\n\ Modifie\ l'\u00E9tat\ du\ plateau\ et/ou\ du\ joueur\ selon\ l'action\ effectu\u00E9e\r\n\ \r\n\ @param\ board\ le\ plateau\ de\ jeu\r\n\ @param\ player\ le\ joueur\ qui\ effectue\ l'action\r\n
+comment2.params=
+comment2.target=java.lang.String\ toString()
+comment2.text=\r\n\ Repr\u00E9sentation\ textuelle\ de\ l'action\r\n\ Utilis\u00E9e\ pour\ afficher\ ce\ que\ le\ joueur\ a\ fait\r\n\ \r\n\ @return\ une\ description\ de\ l'action\r\n
+numComments=3

@@ -1,0 +1,25 @@
+#BlueJ class context
+comment0.target=Resources
+comment0.text=\r\n\ Classe\ Resources\ -\ Repr\u00E9sente\ une\ collection\ de\ ressources/jetons\r\n\ Utilis\u00E9e\ pour\ \:\ le\ co\u00FBt\ des\ cartes,\ les\ jetons\ du\ plateau,\ les\ jetons\ des\ joueurs\r\n\ \r\n\ Impl\u00E9mentation\ \:\ tableau\ d'entiers\ avec\ ordre\ fixe\ correspondant\ \u00E0\ l'\u00E9num\u00E9ration\ Resource\r\n\ \r\n\ @author\ [Ton\ nom]\r\n\ @version\ 1.0\r\n
+comment1.params=
+comment1.target=Resources()
+comment1.text=\r\n\ Constructeur\ par\ d\u00E9faut\r\n\ Initialise\ toutes\ les\ ressources\ \u00E0\ 0\r\n
+comment2.params=diamond\ sapphire\ emerald\ onyx\ ruby
+comment2.target=Resources(int,\ int,\ int,\ int,\ int)
+comment2.text=\r\n\ Constructeur\ avec\ valeurs\ initiales\r\n\ @param\ diamond\ nombre\ de\ diamants\r\n\ @param\ sapphire\ nombre\ de\ saphirs\r\n\ @param\ emerald\ nombre\ d'\u00E9meraudes\r\n\ @param\ onyx\ nombre\ d'onyx\r\n\ @param\ ruby\ nombre\ de\ rubis\r\n
+comment3.params=res
+comment3.target=int\ getNbResource(Resource)
+comment3.text=\r\n\ Retourne\ le\ nombre\ de\ ressources\ disponibles\ pour\ un\ type\ donn\u00E9\r\n\ @param\ res\ le\ type\ de\ ressource\r\n\ @return\ le\ nombre\ de\ ressources\ de\ ce\ type\r\n
+comment4.params=res\ nb
+comment4.target=void\ setNbResource(Resource,\ int)
+comment4.text=\r\n\ Modifie\ le\ nombre\ de\ ressources\ d'un\ type\ donn\u00E9\ (mutateur)\r\n\ @param\ res\ le\ type\ de\ ressource\r\n\ @param\ nb\ le\ nouveau\ nombre\ de\ ressources\r\n
+comment5.params=res\ v
+comment5.target=void\ updateNbResource(Resource,\ int)
+comment5.text=\r\n\ Ajoute\ ou\ retire\ une\ quantit\u00E9\ de\ ressources\ d'un\ type\ donn\u00E9\r\n\ @param\ res\ le\ type\ de\ ressource\r\n\ @param\ v\ la\ quantit\u00E9\ \u00E0\ ajouter\ (v>0)\ ou\ retirer\ (v<0)\r\n\ CONTRAINTE\ \:\ le\ nombre\ de\ ressources\ ne\ peut\ jamais\ \u00EAtre\ n\u00E9gatif\r\n
+comment6.params=
+comment6.target=java.util.List\ getAvailableResources()
+comment6.text=\r\n\ Retourne\ la\ liste\ des\ types\ de\ ressources\ pour\ lesquels\ des\ ressources\ sont\ disponibles\r\n\ @return\ une\ liste\ des\ ressources\ disponibles\ (quantit\u00E9\ >\ 0)\r\n
+comment7.params=
+comment7.target=java.lang.String\ toString()
+comment7.text=\r\n\ Repr\u00E9sentation\ textuelle\ des\ ressources\r\n\ Utile\ pour\ le\ d\u00E9bogage\r\n\ @return\ une\ cha\u00EEne\ d\u00E9crivant\ les\ ressources\r\n
+numComments=8

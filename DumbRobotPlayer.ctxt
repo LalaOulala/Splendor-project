@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=DumbRobotPlayer
+comment0.text=\r\n\ Classe\ DumbRobotPlayer\r\n\ Repr\u00E9sente\ un\ joueur\ robot\ avec\ une\ strat\u00E9gie\ simple\ et\ pr\u00E9visible\r\n\ Strat\u00E9gie\ \:\ acheter\ une\ carte\ >\ prendre\ 2\ jetons\ identiques\ >\ prendre\ 3\ jetons\ diff\u00E9rents\ >\ passer\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 1.0\r\n
+comment1.params=id\ name
+comment1.target=DumbRobotPlayer(int,\ java.lang.String)
+comment1.text=\r\n\ Constructeur\r\n\ @param\ id\ identifiant\ du\ joueur\r\n\ @param\ name\ nom\ du\ robot\r\n
+comment2.params=board
+comment2.target=Action\ chooseAction(Board)
+comment2.text=\r\n\ Choisit\ une\ action\ selon\ la\ strat\u00E9gie\ du\ robot\ stupide\r\n\ Ordre\ de\ priorit\u00E9\ \:\r\n\ 1.\ Acheter\ une\ carte\ (niveau\ 3\ >\ 2\ >\ 1)\r\n\ 2.\ Prendre\ 2\ jetons\ identiques\r\n\ 3.\ Prendre\ 3\ jetons\ diff\u00E9rents\r\n\ 4.\ Passer\ son\ tour\r\n\ \r\n\ @param\ board\ le\ plateau\ de\ jeu\r\n\ @return\ l'action\ choisie\r\n
+comment3.params=
+comment3.target=Resources\ chooseDiscardingTokens()
+comment3.text=\r\n\ Choisit\ al\u00E9atoirement\ les\ jetons\ \u00E0\ d\u00E9fausser\ pour\ revenir\ \u00E0\ 10\ jetons\r\n\ @return\ les\ ressources\ \u00E0\ d\u00E9fausser\r\n
+numComments=4

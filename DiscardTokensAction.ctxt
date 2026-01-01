@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=DiscardTokensAction
+comment0.text=\r\n\ Action\ DiscardTokensAction\r\n\ D\u00E9fausser\ des\ jetons\ quand\ le\ joueur\ en\ poss\u00E8de\ plus\ de\ 10\r\n\ Les\ jetons\ d\u00E9fauss\u00E9s\ retournent\ sur\ le\ plateau\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 1.0\r\n
+comment1.params=toDiscard
+comment1.target=DiscardTokensAction(Resources)
+comment1.text=\r\n\ Constructeur\r\n\ @param\ toDiscard\ les\ ressources\ \u00E0\ d\u00E9fausser\r\n
+comment2.params=board\ player
+comment2.target=void\ process(Board,\ Player)
+comment2.text=\r\n\ Ex\u00E9cute\ l'action\ \:\ retire\ les\ jetons\ du\ joueur\ et\ les\ remet\ sur\ le\ plateau\r\n\ @param\ board\ le\ plateau\ de\ jeu\r\n\ @param\ player\ le\ joueur\ qui\ effectue\ l'action\r\n
+comment3.params=
+comment3.target=java.lang.String\ toString()
+comment3.text=\r\n\ Repr\u00E9sentation\ textuelle\r\n\ @return\ description\ de\ l'action\r\n
+numComments=4

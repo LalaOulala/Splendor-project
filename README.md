@@ -1,888 +1,1774 @@
-# README - Projet Splendor
+# \# README - Projet Splendor
 
-### 
+###### 
 
-### 📋 Description du projet
+###### 
 
+## \### 📋 Description du projet
 
+###### 
 
-Implémentation en Java du jeu de société Splendor dans une version simplifiée en mode console. Ce projet a été réalisé dans le cadre d'un projet de programmation orientée objet en 2ème année de prépa informatique.
+###### 
 
+###### 
 
+###### Implémentation en Java du jeu de société Splendor dans une version simplifiée en mode console. Ce projet a été réalisé dans le cadre d'un projet de programmation orientée objet en 2ème année de prépa informatique.
 
-Le jeu Splendor est un jeu de stratégie où les joueurs incarnent des marchands de la Renaissance qui doivent collecter des gemmes pour acheter des cartes de développement et accumuler des points de prestige. Le premier joueur à atteindre 15 points remporte la partie.
+###### 
 
+###### 
 
+###### 
 
+###### Le jeu Splendor est un jeu de stratégie où les joueurs incarnent des marchands de la Renaissance qui doivent collecter des gemmes pour acheter des cartes de développement et accumuler des points de prestige. Le premier joueur à atteindre 15 points remporte la partie.
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
-### 🎮 Règles du jeu
+###### 
 
+###### 
 
+###### 
 
-#### Objectif
+###### 
 
+## \### 🎮 Règles du jeu
 
+###### 
 
-Être le premier joueur à atteindre 15 points de prestige en achetant des cartes de développement.
+###### 
 
+###### 
 
+### \#### Objectif
 
-#### Tour de jeu
+###### 
 
+###### 
 
+###### 
 
-À chaque tour, un joueur peut effectuer une seule action parmi :
+###### Être le premier joueur à atteindre 15 points de prestige en achetant des cartes de développement.
 
+###### 
 
+###### 
 
-Prendre 2 jetons identiques (si au moins 4 jetons de ce type sont disponibles)
+###### 
 
+### \#### Tour de jeu
 
+###### 
 
-Prendre 3 jetons de types différents (1 de chaque)
+###### 
 
+###### 
 
+###### À chaque tour, un joueur peut effectuer une seule action parmi :
 
-Acheter une carte de développement
+###### 
 
+###### 
 
+###### 
 
-Passer son tour
+###### Prendre 2 jetons identiques (si au moins 4 jetons de ce type sont disponibles)
 
+###### 
 
+###### 
 
-#### Cartes de développement
+###### 
 
+###### Prendre 3 jetons de types différents (1 de chaque)
 
+###### 
 
-Organisées en 3 niveaux de difficulté (1, 2, 3)
+###### 
 
+###### 
 
+###### Acheter une carte de développement
 
-Chaque carte a un coût en ressources (gemmes)
+###### 
 
+###### 
 
+###### 
 
-Chaque carte rapporte des points de prestige (0 à 5 points)
+###### Passer son tour
 
+###### 
 
+###### 
 
-Chaque carte produit un bonus permanent d'une ressource
+###### 
 
+### \#### Cartes de développement
 
+###### 
 
-#### Ressources
+###### 
 
+###### 
 
+###### Organisées en 3 niveaux de difficulté (1, 2, 3)
 
-5 types de gemmes :
+###### 
 
+###### 
 
+###### 
 
-♦ Diamant (D)
+###### Chaque carte a un coût en ressources (gemmes)
 
+###### 
 
+###### 
 
-♠ Saphir (S)
+###### 
 
+###### Chaque carte rapporte des points de prestige (0 à 5 points)
 
+###### 
 
-♣ Émeraude (E)
+###### 
 
+###### 
 
+###### Chaque carte produit un bonus permanent d'une ressource
 
-♥ Rubis (R)
+###### 
 
+###### 
 
+###### 
 
-● Onyx (O)
+### \#### Ressources
 
+###### 
 
+###### 
 
-#### Limite de jetons
+###### 
 
+###### 5 types de gemmes :
 
+###### 
 
-Un joueur ne peut pas posséder plus de 10 jetons. S'il dépasse, il doit défausser jusqu'à revenir à 10.
+###### 
 
+###### 
 
+###### ♦ Diamant (D)
 
-#### Fin de partie
+###### 
 
+###### 
 
+###### 
 
-La partie se termine dès qu'un joueur atteint 15 points. En cas d'égalité, le joueur avec le moins de cartes gagne.
+###### ♠ Saphir (S)
 
+###### 
 
+###### 
 
+###### 
 
+###### ♣ Émeraude (E)
 
+###### 
 
+###### 
 
+###### 
 
+###### ♥ Rubis (R)
 
-### 🏗️ Architecture du projet
+###### 
 
+###### 
 
+###### 
 
-splendor/
+###### ● Onyx (O)
 
-├── Resource.java                     (Énumération des 5 types de ressources)
+###### 
 
-├── Resources.java                    (Gestion des quantités de ressources)
+###### 
 
-├── DevCard.java                      (Carte de développement)
+###### 
 
-├── Board.java                        (Plateau de jeu avec piles et cartes visibles)
+### \#### Limite de jetons
 
-├── Player.java                       (Classe abstraite joueur)
+###### 
 
-├── HumanPlayer.java                  (Joueur humain avec interaction console)
+###### 
 
-├── DumbRobotPlayer.java              (Robot avec stratégie simple)
+###### 
 
-├── Action.java                       (Interface pour toutes les actions)
+###### Un joueur ne peut pas posséder plus de 10 jetons. S'il dépasse, il doit défausser jusqu'à revenir à 10.
 
-├── PassAction.java                   (Action : passer son tour)
+###### 
 
-├── PickSameTokensAction.java         (Action : prendre 2 jetons identiques)
+###### 
 
-├── PickDiffTokensAction.java         (Action : prendre 1-3 jetons différents)
+###### 
 
-├── BuyCardAction.java                (Action : acheter une carte)
+### \#### Fin de partie
 
-├── DiscardTokensAction.java          (Action : défausser des jetons)
+###### 
 
-├── Game.java                         (Orchestration de la partie)
+###### 
 
-├── Display.java                      (Interface graphique console fournie)
+###### 
 
-├── Display$1.class                   (Classe interne de Display)
+###### La partie se termine dès qu'un joueur atteint 15 points. En cas d'égalité, le joueur avec le moins de cartes gagne.
 
-├── Display$2.class                   (Classe interne de Display)
+###### 
 
-├── Display$TextAreaPrintStream.class (Classe interne de Display)
+###### 
 
-├── Display$ReadableTextField.class   (Classe interne de Display)
+###### 
 
-├── Displayable.java                  (Interface pour l'affichage)
+###### 
 
-├── stats.csv                         (Données des 90 cartes)
+###### 
 
-└── package.bluej                     (Configuration BlueJ)
+###### 
 
-…
+###### 
 
+###### 
 
+###### 
 
+## \### 🏗️ Architecture du projet
 
+###### 
 
+###### 
 
+###### 
 
+###### splendor/
 
+###### 
 
+###### ├── Resource.java                     (Énumération des 5 types de ressources)
 
+###### 
 
-#### Diagramme de classes 
+###### ├── Resources.java                    (Gestion des quantités de ressources)
 
+###### 
 
+###### ├── DevCard.java                      (Carte de développement)
 
-┌─────────────────────────────────────────────────────────────────┐
+###### 
 
-│                         <<interface>>                           │
+###### ├── Board.java                        (Plateau de jeu avec piles et cartes visibles)
 
-│                           Action                                │
+###### 
 
-│  + process(Board, Player): void                                 │
+###### ├── Player.java                       (Classe abstraite joueur)
 
-│  + toString(): String                                           │
+###### 
 
-└──────────────┬──────────────────────────────────────────────────┘
+###### ├── HumanPlayer.java                  (Joueur humain avec interaction console)
 
-&nbsp;              │
+###### 
 
-&nbsp;      ┌───────┴────────────────────────────────┐
+###### ├── DumbRobotPlayer.java              (Robot avec stratégie simple)
 
-&nbsp;      │       │           │           │        │
+###### 
 
-&nbsp;      ▼       ▼           ▼           ▼        ▼
+###### ├── Action.java                       (Interface pour toutes les actions)
 
-&nbsp; PassAction  PickSame  PickDiff   BuyCard  DiscardTokens
+###### 
 
-&nbsp;            TokensAction TokensAction Action    Action
+###### ├── PassAction.java                   (Action : passer son tour)
 
+###### 
 
+###### ├── PickSameTokensAction.java         (Action : prendre 2 jetons identiques)
 
+###### 
 
+###### ├── PickDiffTokensAction.java         (Action : prendre 1-3 jetons différents)
 
-┌─────────────────────────────────────────────────────────────────┐
+###### 
 
-│                      <<abstract>>                               │
+###### ├── BuyCardAction.java                (Action : acheter une carte)
 
-│                        Player                                   │
+###### 
 
-│  # id: int                                                      │
+###### ├── DiscardTokensAction.java          (Action : défausser des jetons)
 
-│  # name: String                                                 │
+###### 
 
-│  # points: int                                                  │
+###### ├── Game.java                         (Orchestration de la partie)
 
-│  # purchasedCards: ArrayList<DevCard>                           │
+###### 
 
-│  # resources: Resources                                         │
+###### ├── Display.java                      (Interface graphique console fournie)
 
-│  + chooseAction(Board): Action  \[abstract]                      │
+###### 
 
-│  + chooseDiscardingTokens(): Resources  \[abstract]              │
+###### ├── Display$1.class                   (Classe interne de Display)
 
-│  + canBuyCard(DevCard): boolean                                 │
+###### 
 
-│  + getResFromCards(Resource): int                               │
+###### ├── Display$2.class                   (Classe interne de Display)
 
-└──────────────┬──────────────────────────────────────────────────┘
+###### 
 
-&nbsp;              │
+###### ├── Display$TextAreaPrintStream.class (Classe interne de Display)
 
-&nbsp;      ┌───────┴───────┐
+###### 
 
-&nbsp;      ▼               ▼
+###### ├── Display$ReadableTextField.class   (Classe interne de Display)
 
-&nbsp; HumanPlayer    DumbRobotPlayer
+###### 
 
-&nbsp; - scanner       (stratégie simple)
+###### ├── Displayable.java                  (Interface pour l'affichage)
 
+###### 
 
+###### ├── stats.csv                         (Données des 90 cartes)
 
+###### 
 
+###### └── package.bluej                     (Configuration BlueJ)
 
-┌─────────────────────────────────────────────────────────────────┐
+###### 
 
-│                            Game                                 │
+###### …
 
-│  + static display: Display                                      │
+###### 
 
-│  - board: Board                                                 │
+###### 
 
-│  - players: ArrayList<Player>                                   │
+###### 
 
-│  + play(): void                                                 │
+###### 
 
-│  - move(int): void                                              │
+###### 
 
-│  - discardToken(int): void                                      │
+###### 
 
-│  - isGameOver(): boolean                                        │
+###### 
 
-│  - gameOver(): void                                             │
+###### 
 
-└─────────────┬───────────────────────────────┬───────────────────┘
+###### 
 
-&nbsp;             │                               │
+###### 
 
-&nbsp;             ▼                               ▼
+###### 
 
-&nbsp;       ┌─────────┐                    ┌──────────────┐
+## \#### Diagramme de classes 
 
-&nbsp;       │  Board  │                    │   Display    │
+###### 
 
-&nbsp;       │         │◄───────────────────┤              │
+###### 
 
-&nbsp;       └─────────┘                    └──────────────┘
+###### 
 
-&nbsp;       │       │
+###### ┌─────────────────────────────────────────────────────────────────┐
 
-&nbsp;       │       └──────┐
+###### 
 
-&nbsp;       ▼              ▼
+###### │                         <<interface>>                           │
 
-&nbsp;   DevCard\[]\[]   Stack<DevCard>\[]
+###### 
 
-&nbsp;       │
+###### │                           Action                                │
 
-&nbsp;       └──────► Resources
+###### 
 
+###### │  + process(Board, Player): void                                 │
 
+###### 
 
+###### │  + toString(): String                                           │
 
+###### 
 
-┌─────────────────────────────────────────────────────────────────┐
+###### └──────────────┬──────────────────────────────────────────────────┘
 
-│                         DevCard                                 │
+###### 
 
-│  - tier: int                                                    │
+###### \&nbsp;              │
 
-│  - cost: Resources                                              │
+###### 
 
-│  - points: int                                                  │
+###### \&nbsp;      ┌───────┴────────────────────────────────┐
 
-│  - resourceType: Resource                                       │
+###### 
 
-│  + getTier(): int                                               │
+###### \&nbsp;      │       │           │           │        │
 
-│  + getCost(): Resources                                         │
+###### 
 
-│  + getPoints(): int                                             │
+###### \&nbsp;      ▼       ▼           ▼           ▼        ▼
 
-│  + getResourceType(): Resource                                  │
+###### 
 
-└─────────────────────────────────────────────────────────────────┘
+###### \&nbsp; PassAction  PickSame  PickDiff   BuyCard  DiscardTokens
 
+###### 
 
+###### \&nbsp;            TokensAction TokensAction Action    Action
 
+###### 
 
+###### 
 
-┌─────────────────────────────────────────────────────────────────┐
+###### 
 
-│                        Resources                                │
+###### 
 
-│  - resources: int\[5]                                            │
+###### 
 
-│  + getNbResource(Resource): int                                 │
+###### ┌─────────────────────────────────────────────────────────────────┐
 
-│  + setNbResource(Resource, int): void                           │
+###### 
 
-│  + updateNbResource(Resource, int): void                        │
+###### │                      <<abstract>>                               │
 
-│  + getAvailableResources(): List<Resource>                      │
+###### 
 
-└─────────────────────────────────────────────────────────────────┘
+###### │                        Player                                   │
 
+###### 
 
+###### │  # id: int                                                      │
 
+###### 
 
+###### │  # name: String                                                 │
 
-┌─────────────────────────────────────────────────────────────────┐
+###### 
 
-│                    <<enumeration>>                              │
+###### │  # points: int                                                  │
 
-│                        Resource                                 │
+###### 
 
-│  DIAMOND, SAPPHIRE, EMERALD, RUBY, ONYX                         │
+###### │  # purchasedCards: ArrayList<DevCard>                           │
 
-│  + toSymbol(): String                                           │
+###### 
 
-└─────────────────────────────────────────────────────────────────┘
+###### │  # resources: Resources                                         │
 
+###### 
 
+###### │  + chooseAction(Board): Action  \\\[abstract]                      │
 
+###### 
 
+###### │  + chooseDiscardingTokens(): Resources  \\\[abstract]              │
 
-┌─────────────────────────────────────────────────────────────────┐
+###### 
 
-│                    <<interface>>                                │
+###### │  + canBuyCard(DevCard): boolean                                 │
 
-│                      Displayable                                │
+###### 
 
-│  + toStringArray(): String\[]                                    │
+###### │  + getResFromCards(Resource): int                               │
 
-└─────────────────────────────────────────────────────────────────┘
+###### 
 
-&nbsp;       ▲           ▲            ▲
+###### └──────────────┬──────────────────────────────────────────────────┘
 
-&nbsp;       │           │            │
+###### 
 
-&nbsp;    Board       DevCard      Player
+###### \&nbsp;              │
 
+###### 
 
+###### \&nbsp;      ┌───────┴───────┐
 
+###### 
 
+###### \&nbsp;      ▼               ▼
 
+###### 
 
+###### \&nbsp; HumanPlayer    DumbRobotPlayer
 
+###### 
 
+###### \&nbsp; - scanner       (stratégie simple)
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### ┌─────────────────────────────────────────────────────────────────┐
 
+###### 
 
+###### │                            Game                                 │
 
+###### 
 
+###### │  + static display: Display                                      │
 
-### 🚀 Installation et lancement
+###### 
 
+###### │  - board: Board                                                 │
 
+###### 
 
-Prérequis
+###### │  - players: ArrayList<Player>                                   │
 
-Java 11 ou supérieur
+###### 
 
+###### │  + play(): void                                                 │
 
+###### 
 
-BlueJ ou tout IDE Java (IntelliJ, Eclipse, VS Code)
+###### │  - move(int): void                                              │
 
+###### 
 
+###### │  - discardToken(int): void                                      │
 
-Compilation
+###### 
 
-Avec BlueJ
+###### │  - isGameOver(): boolean                                        │
 
-Ouvrir le dossier du projet dans BlueJ
+###### 
 
+###### │  - gameOver(): void                                             │
 
+###### 
 
-Compiler toutes les classes (bouton "Compile")
+###### └─────────────┬───────────────────────────────┬───────────────────┘
 
+###### 
 
+###### \&nbsp;             │                               │
 
-Clic droit sur Game → void main(String\[] args)
+###### 
 
+###### \&nbsp;             ▼                               ▼
 
+###### 
 
-Avec ligne de commande
+###### \&nbsp;       ┌─────────┐                    ┌──────────────┐
 
-bash
+###### 
 
-\# Compilation
+###### \&nbsp;       │  Board  │                    │   Display    │
 
-javac \*.java
+###### 
 
+###### \&nbsp;       │         │◄───────────────────┤              │
 
+###### 
 
-\# Lancement
+###### \&nbsp;       └─────────┘                    └──────────────┘
 
-java Game
+###### 
 
-Configuration d'une partie
+###### \&nbsp;       │       │
 
-Au lancement, le programme demande :
+###### 
 
+###### \&nbsp;       │       └──────┐
 
+###### 
 
-Nombre de joueurs (2 à 4)
+###### \&nbsp;       ▼              ▼
 
+###### 
 
+###### \&nbsp;   DevCard\\\[]\\\[]   Stack<DevCard>\\\[]
 
-Nombre de joueurs humains (0 à nbJoueurs)
+###### 
 
+###### \&nbsp;       │
 
+###### 
 
-Nom de chaque joueur (humains et robots)
+###### \&nbsp;       └──────► Resources
 
+###### 
 
+###### 
 
-Exemple :
+###### 
 
+###### 
 
+###### 
 
-text
+###### ┌─────────────────────────────────────────────────────────────────┐
 
-Nombre de joueurs (2-4) : 3
+###### 
 
-Combien de joueurs humains ? (0-3) : 2
+###### │                         DevCard                                 │
 
+###### 
 
+###### │  - tier: int                                                    │
 
-=== Joueurs humains ===
+###### 
 
-Nom du joueur humain 1 : Alice
+###### │  - cost: Resources                                              │
 
-Nom du joueur humain 2 : Bob
+###### 
 
+###### │  - points: int                                                  │
 
+###### 
 
-=== Robots ===
+###### │  - resourceType: Resource                                       │
 
-Nom du robot 1 : Skynet
+###### 
 
+###### │  + getTier(): int                                               │
 
+###### 
 
+###### │  + getCost(): Resources                                         │
 
+###### 
 
+###### │  + getPoints(): int                                             │
 
+###### 
 
+###### │  + getResourceType(): Resource                                  │
 
+###### 
 
+###### └─────────────────────────────────────────────────────────────────┘
 
+###### 
 
-#### 🎯 Utilisation (Joueur humain)
+###### 
 
+###### 
 
+###### 
 
-Menu principal
+###### 
 
-text
+###### ┌─────────────────────────────────────────────────────────────────┐
 
-=== Votre tour, Alice ===
+###### 
 
-1\. Prendre 2 jetons identiques
+###### │                        Resources                                │
 
-2\. Prendre 3 jetons différents
+###### 
 
-3\. Acheter une carte
+###### │  - resources: int\\\[5]                                            │
 
-4\. Passer votre tour
+###### 
 
-Votre choix (1-4) :
+###### │  + getNbResource(Resource): int                                 │
 
-Prendre des jetons
+###### 
 
-2 identiques : Choisir le type (D/S/E/R/O)
+###### │  + setNbResource(Resource, int): void                           │
 
+###### 
 
+###### │  + updateNbResource(Resource, int): void                        │
 
-3 différents : Choisir 3 types différents successivement
+###### 
 
+###### │  + getAvailableResources(): List<Resource>                      │
 
+###### 
 
-Taper 0 pour revenir au menu principal
+###### └─────────────────────────────────────────────────────────────────┘
 
+###### 
 
+###### 
 
-Acheter une carte
+###### 
 
-Saisir le niveau (1-3)
+###### 
 
+###### 
 
+###### ┌─────────────────────────────────────────────────────────────────┐
 
-Saisir la colonne (1-4)
+###### 
 
+###### │                    <<enumeration>>                              │
 
+###### 
 
-Les bonus des cartes déjà possédées réduisent automatiquement le coût
+###### │                        Resource                                 │
 
+###### 
 
+###### │  DIAMOND, SAPPHIRE, EMERALD, RUBY, ONYX                         │
 
-Défausse (si > 10 jetons)
+###### 
 
-Le jeu demande automatiquement quels jetons défausser jusqu'à revenir à 10.
+###### │  + toSymbol(): String                                           │
 
+###### 
 
+###### └─────────────────────────────────────────────────────────────────┘
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### ┌─────────────────────────────────────────────────────────────────┐
 
+###### 
 
+###### │                    <<interface>>                                │
 
-#### 🤖 Intelligence Artificielle (Robot)
+###### 
 
+###### │                      Displayable                                │
 
+###### 
 
-Le DumbRobotPlayer suit une stratégie simple :
+###### │  + toStringArray(): String\\\[]                                    │
 
+###### 
 
+###### └─────────────────────────────────────────────────────────────────┘
 
-Acheter une carte si possible (priorité niveau 3 > 2 > 1)
+###### 
 
+###### \&nbsp;       ▲           ▲            ▲
 
+###### 
 
-Prendre 2 jetons identiques si possible
+###### \&nbsp;       │           │            │
 
+###### 
 
+###### \&nbsp;    Board       DevCard      Player
 
-Prendre 3 jetons différents si possible
+###### 
 
+###### 
 
+###### 
 
-Passer son tour sinon
+###### 
 
+###### 
 
+###### 
 
-Cette stratégie est prévisible mais fonctionnelle pour tester le jeu.
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+## \### 🚀 Installation et lancement
 
+###### 
 
-### 📊 Fonctionnalités implémentées
+###### 
 
+###### 
 
+### Prérequis
 
+###### 
 
+###### Java 11 ou supérieur
 
+###### 
 
+###### 
 
+###### 
 
+###### BlueJ ou tout IDE Java (IntelliJ, Eclipse, VS Code)
 
-#### ✅ Fonctionnalités principales
+###### 
 
+###### 
 
+###### 
 
-&nbsp;Lecture du fichier CSV des cartes
+### Compilation
 
+###### 
 
+###### Avec BlueJ
 
-&nbsp;Plateau de jeu avec 3 niveaux de cartes
+###### 
 
+###### Ouvrir le dossier du projet dans BlueJ
 
+###### 
 
-&nbsp;Gestion des ressources (jetons)
+###### 
 
+###### 
 
+###### Compiler toutes les classes (bouton "Compile")
 
-&nbsp;Système d'actions avec interface
+###### 
 
+###### 
 
+###### 
 
-&nbsp;Joueur humain avec interaction console
+###### Clic droit sur Game → void main(String\\\[] args)
 
+###### 
 
+###### 
 
-&nbsp;Robot avec IA basique
+###### 
 
+### Avec ligne de commande
 
+###### 
 
-&nbsp;Système de bonus permanents des cartes
+###### bash
 
+###### 
 
+###### \\# Compilation
 
-&nbsp;Calcul automatique du coût avec bonus
+###### 
 
+###### javac \\\*.java
 
+###### 
 
-&nbsp;Limite de 10 jetons avec défausse obligatoire
+###### 
 
+###### 
 
+### \\# Lancement
 
-&nbsp;Détection de fin de partie (15 points)
+###### 
 
+###### java Game
 
+###### 
 
-&nbsp;Gestion des égalités (départage par nombre de cartes)
+###### Configuration d'une partie
 
+###### 
 
+###### Au lancement, le programme demande :
 
+###### 
 
+###### 
 
+###### 
 
+###### Nombre de joueurs (2 à 4)
 
+###### 
 
+###### 
 
-#### ✅ Améliorations de l'interface
+###### 
 
+###### Nombre de joueurs humains (0 à nbJoueurs)
 
+###### 
 
-&nbsp;Retour au menu principal (touche 0)
+###### 
 
+###### 
 
+###### Nom de chaque joueur (humains et robots)
 
-&nbsp;Confirmation des actions
+###### 
 
+###### 
 
+###### 
 
-&nbsp;Affichage détaillé des ressources
+### Exemple :
 
+###### 
 
+###### 
 
-&nbsp;Gestion des cas limites (pas assez de ressources sur le plateau)
+###### 
 
+###### text
 
+###### 
 
-&nbsp;Messages d'erreur clairs
+###### Nombre de joueurs (2-4) : 3
 
+###### 
 
+###### Combien de joueurs humains ? (0-3) : 2
 
-&nbsp;Affichage immédiat des choix
+###### 
 
+###### 
 
+###### 
 
+###### === Joueurs humains ===
 
+###### 
 
+###### Nom du joueur humain 1 : Alice
 
+###### 
 
+###### Nom du joueur humain 2 : Bob
 
+###### 
 
+###### 
 
+###### 
 
-### ❌ Non implémenté (version simplifiée)
+###### === Robots ===
 
+###### 
 
+###### Nom du robot 1 : Skynet
 
-&nbsp;Nobles (cartes de niveau 0)
+###### 
 
+###### 
 
+###### 
 
-&nbsp;Jetons Or (joker)
+###### 
 
+###### 
 
+###### 
 
-&nbsp;Stratégie de Jeu : Rush
+###### 
 
+###### 
 
+###### 
 
-&nbsp;Réservation de cartes
+###### 
 
+###### 
 
+## \#### 🎯 Utilisation (Joueur humain)
 
-&nbsp;Interface graphique
+###### 
 
+###### 
 
+###### 
 
+###### Menu principal
 
+###### 
 
+###### text
 
+###### 
 
+###### === Votre tour, Alice ===
 
+###### 
 
+###### 1\\. Prendre 2 jetons identiques
 
+###### 
 
+###### 2\\. Prendre 3 jetons différents
 
+###### 
 
-### 📝 Exemples de parties
+###### 3\\. Acheter une carte
 
+###### 
 
+###### 4\\. Passer votre tour
 
-Partie rapide (2 joueurs)
+###### 
 
-text
+###### Votre choix (1-4) :
 
-Joueur 1 (Alice) : Humain
+###### 
 
-Joueur 2 (Robot 1) : Robot
+###### Prendre des jetons
 
+###### 
 
+###### 2 identiques : Choisir le type (D/S/E/R/O)
 
-Tour 1 - Alice prend 2 saphirs
+###### 
 
-Tour 2 - Robot 1 prend 2 diamants
+###### 
 
-Tour 3 - Alice achète une carte niveau 1 (bonus diamant)
+###### 
 
-...
+###### 3 différents : Choisir 3 types différents successivement
 
-Tour 18 - Alice achète une carte niveau 3 (5 points)
+###### 
 
-→ Alice atteint 15 points et remporte la partie !
+###### 
 
-Partie avec égalité
+###### 
 
-text
+###### Taper 0 pour revenir au menu principal
 
-Alice : 15 points, 8 cartes
+###### 
 
-Bob : 15 points, 9 cartes
+###### 
 
-→ Alice remporte la partie (moins de cartes)
+###### 
 
+###### Acheter une carte
 
+###### 
 
+###### Saisir le niveau (1-3)
 
+###### 
 
+###### 
 
+###### 
 
+###### Saisir la colonne (1-4)
 
+###### 
 
+###### 
 
+###### 
 
-### 👨‍💻 Auteur
+###### Les bonus des cartes déjà possédées réduisent automatiquement le coût
 
+###### 
 
+###### 
 
-FONFREIDE Quentin
+###### 
 
-Étudiant en 2ème année de prépa informatique
+###### Défausse (si > 10 jetons)
 
-Projet réalisé en décembre 2025
+###### 
 
+###### Le jeu demande automatiquement quels jetons défausser jusqu'à revenir à 10.
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
-### 📚 Ressources
+## \#### 🤖 Intelligence Artificielle (Robot)
 
+###### 
 
+###### 
 
-Règles officielles de Splendor
+###### 
 
+###### Le DumbRobotPlayer suit une stratégie simple :
 
+###### 
 
-Cahier des charges du projet : 2025-Projet-Splendor.odt
+###### 
 
+###### 
 
+###### Acheter une carte si possible (priorité niveau 3 > 2 > 1)
 
-Données des cartes : stats.csv (90 cartes de développement)
+###### 
 
+###### 
 
+###### 
 
+###### Prendre 2 jetons identiques si possible
 
+###### 
 
+###### 
 
+###### 
 
+###### Prendre 3 jetons différents si possible
 
+###### 
 
+###### 
 
+###### 
 
+###### Passer son tour sinon
 
+###### 
 
-### 🎓 Compétences développées
+###### 
 
+###### 
 
+###### Cette stratégie est prévisible mais fonctionnelle pour tester le jeu.
 
-Programmation Orientée Objet : héritage, polymorphisme, interfaces
+###### 
 
+###### 
 
+###### 
 
-Architecture logicielle : séparation des responsabilités, design patterns
+###### 
 
+###### 
 
+###### 
 
-Gestion de fichiers : lecture et parsing de CSV
+###### 
 
+###### 
 
+###### 
 
-Collections Java : List, ArrayList, Stack
+###### 
 
+###### 
 
+###### 
 
-Interaction utilisateur : Scanner, validation des entrées
+###### 
 
+###### 
 
+###### 
 
-Algorithmique : stratégie d'IA, gestion d'états de jeu
+## \### 📊 Fonctionnalités implémentées
 
+###### 
 
+###### 
 
-Débogage : résolution de problèmes de buffer, gestion d'exceptions
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+###### 
 
+### \#### ✅ Fonctionnalités principales
 
+###### 
 
+###### 
 
+###### 
 
+###### \&nbsp;Lecture du fichier CSV des cartes
 
+###### 
 
+###### 
 
+###### 
 
-### 📄 Licence
+###### \&nbsp;Plateau de jeu avec 3 niveaux de cartes
 
+###### 
 
+###### 
 
-Ce projet est réalisé dans un cadre pédagogique. Le jeu Splendor est la propriété de Space Cowboys.
+###### 
 
+###### \&nbsp;Gestion des ressources (jetons)
 
+###### 
 
-Bonne partie ! 🎲💎
+###### 
+
+###### 
+
+###### \&nbsp;Système d'actions avec interface
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Joueur humain avec interaction console
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Robot avec IA basique
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Système de bonus permanents des cartes
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Calcul automatique du coût avec bonus
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Limite de 10 jetons avec défausse obligatoire
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Détection de fin de partie (15 points)
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Gestion des égalités (départage par nombre de cartes)
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+### \#### ✅ Améliorations de l'interface
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Retour au menu principal (touche 0)
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Confirmation des actions
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Affichage détaillé des ressources
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Gestion des cas limites (pas assez de ressources sur le plateau)
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Messages d'erreur clairs
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Affichage immédiat des choix
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+### \### ❌ Non implémenté (version simplifiée)
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Nobles (cartes de niveau 0)
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Jetons Or (joker)
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Stratégie de Jeu : Rush
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Réservation de cartes
+
+###### 
+
+###### 
+
+###### 
+
+###### \&nbsp;Interface graphique
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+## \### 📝 Exemples de parties
+
+###### 
+
+###### 
+
+###### 
+
+###### Partie rapide (2 joueurs)
+
+###### 
+
+###### text
+
+###### 
+
+###### Joueur 1 (Alice) : Humain
+
+###### 
+
+###### Joueur 2 (Robot 1) : Robot
+
+###### 
+
+###### 
+
+###### 
+
+###### Tour 1 - Alice prend 2 saphirs
+
+###### 
+
+###### Tour 2 - Robot 1 prend 2 diamants
+
+###### 
+
+###### Tour 3 - Alice achète une carte niveau 1 (bonus diamant)
+
+###### 
+
+###### ...
+
+###### 
+
+###### Tour 18 - Alice achète une carte niveau 3 (5 points)
+
+###### 
+
+###### → Alice atteint 15 points et remporte la partie !
+
+###### 
+
+###### Partie avec égalité
+
+###### 
+
+###### text
+
+###### 
+
+###### Alice : 15 points, 8 cartes
+
+###### 
+
+###### Bob : 15 points, 9 cartes
+
+###### 
+
+###### → Alice remporte la partie (moins de cartes)
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+## \### 👨‍💻 Auteur
+
+###### 
+
+###### 
+
+###### 
+
+###### FONFREIDE Quentin
+
+###### 
+
+###### Étudiant en 2ème année de prépa informatique
+
+###### 
+
+###### Projet réalisé en décembre 2025
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+## \### 📚 Ressources
+
+###### 
+
+###### 
+
+###### 
+
+###### Règles officielles de Splendor
+
+###### 
+
+###### 
+
+###### 
+
+###### Cahier des charges du projet : 2025-Projet-Splendor.odt
+
+###### 
+
+###### 
+
+###### 
+
+###### Données des cartes : stats.csv (90 cartes de développement)
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+## \### 🎓 Compétences développées
+
+###### 
+
+###### 
+
+###### 
+
+###### Programmation Orientée Objet : héritage, polymorphisme, interfaces
+
+###### 
+
+###### 
+
+###### 
+
+###### Architecture logicielle : séparation des responsabilités, design patterns
+
+###### 
+
+###### 
+
+###### 
+
+###### Gestion de fichiers : lecture et parsing de CSV
+
+###### 
+
+###### 
+
+###### 
+
+###### Collections Java : List, ArrayList, Stack
+
+###### 
+
+###### 
+
+###### 
+
+###### Interaction utilisateur : Scanner, validation des entrées
+
+###### 
+
+###### 
+
+###### 
+
+###### Algorithmique : stratégie d'IA, gestion d'états de jeu
+
+###### 
+
+###### 
+
+###### 
+
+###### Débogage : résolution de problèmes de buffer, gestion d'exceptions
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+###### 
+
+## \### 📄 Licence
+
+###### 
+
+###### 
+
+###### 
+
+###### Ce projet est réalisé dans un cadre pédagogique. Le jeu Splendor est la propriété de Space Cowboys.
+
+###### 
+
+###### 
+
+###### 
+
+###### Bonne partie ! 🎲💎
+
+###### 
 
