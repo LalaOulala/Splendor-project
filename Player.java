@@ -58,7 +58,14 @@ public abstract class Player implements Displayable {
      * Utilisés pour payer le coût des cartes. Limités à 10 jetons maximum.
      */
     private Resources resources;
-
+    
+    /**
+     * Liste des nobles obtenus par le joueur.
+     * Chaque noble rapporte 3 points de prestige et s'obtient automatiquement
+     * quand le joueur possède assez de bonus de cartes correspondant aux exigences du noble.
+     * Un seul noble peut être obtenu par tour maximum.
+     */
+    private ArrayList<Noble> purchasedNobles;
     
     /**
      * Constructeur de Player.
@@ -74,6 +81,7 @@ public abstract class Player implements Displayable {
         this.points = 0;
         this.purchasedCards = new ArrayList<>();
         this.resources = new Resources();
+        this.purchasedNobles = new ArrayList<Noble>();
     }
 
 
@@ -234,6 +242,108 @@ public abstract class Player implements Displayable {
         
         return true;
     }
+    
+    // ============= GESTION DES NOBLES =============
+    
+    /**
+     * Ajoute un noble à la liste des nobles obtenus par le joueur.
+     * Les points du noble (toujours 3) sont automatiquement ajoutés au score du joueur.
+     * Affiche également un message dans la console pour notifier l'obtention du noble.
+     * 
+     * Cette méthode ne doit pas être appelée directement : utilisez plutôt
+     * checkAndObtainNobles() qui gère toute la logique d'attribution.
+     * 
+     * @param noble Le noble à ajouter au joueur
+     */
+    public void addPurchasedNoble(Noble noble) {
+        this.purchasedNobles.add(noble);
+        this.points += noble.getPoints();
+        
+        // Message d'obtention du noble (sera affiché après l'action d'achat)
+        Game.display.out.println();
+        Game.display.out.println("\u269C " + this.name + " obtient un noble ! (+" 
+                                + noble.getPoints() + " pts)");
+    }
+
+    
+    /**
+     * Retourne la liste des nobles obtenus par le joueur.
+     * Permet d'accéder aux détails de chaque noble possédé.
+     * 
+     * @return ArrayList contenant tous les nobles du joueur
+     */
+    public int getNbPurchasedNobles() {
+        return this.purchasedNobles.size();
+    }
+    
+    /**
+     * Retourne la liste des nobles obtenus par le joueur.
+     * 
+     * @return ArrayList des nobles
+     */
+    public ArrayList<Noble> getPurchasedNobles() {
+        return this.purchasedNobles;
+    }
+    
+    /**
+     * Vérifie et obtient automatiquement les nobles disponibles.
+     * Cette méthode doit être appelée après chaque achat de carte.
+     * 
+     * Un joueur obtient un noble s'il possède assez de bonus de cartes
+     * correspondant aux exigences du noble.
+     * 
+     * Si plusieurs nobles sont éligibles, le joueur choisit lequel garder.
+     * 
+     * @param board Le plateau de jeu
+     */
+    public void checkAndObtainNobles(Board board) {
+        // Trouver TOUS les nobles éligibles
+        List<Noble> eligibleNobles = new ArrayList<>();
+        
+        for (Noble noble : board.getVisibleNobles()) {
+            if (board.canObtainNoble(noble, this)) {
+                eligibleNobles.add(noble);
+            }
+        }
+        
+        // Aucun noble disponible
+        if (eligibleNobles.isEmpty()) {
+            return;
+        }
+        
+        // UN seul noble : l'obtenir directement
+        if (eligibleNobles.size() == 1) {
+            Noble chosenNoble = eligibleNobles.get(0);
+            addPurchasedNoble(chosenNoble);
+            board.removeNoble(chosenNoble);
+            Game.display.out.println("\u269C " + this.name + " obtient un noble ! (+3 pts)");
+            return;
+        }
+        
+        // PLUSIEURS nobles : laisser le joueur choisir
+        Noble chosenNoble = chooseNoble(eligibleNobles);
+        addPurchasedNoble(chosenNoble);
+        board.removeNoble(chosenNoble);
+        Game.display.out.println("\u269C " + this.name + " obtient un noble ! (+3 pts)");
+    }
+
+    /**
+     * Permet au joueur de choisir quel noble obtenir parmi plusieurs nobles éligibles.
+     * 
+     * Cette méthode abstraite est appelée par checkAndObtainNobles() uniquement
+     * quand le joueur devient éligible pour plusieurs nobles en même temps.
+     * 
+     * Implémentations :
+     * - HumanPlayer : affiche la liste des nobles éligibles et demande à l'utilisateur
+     *   de choisir interactivement via le terminal
+     * - DumbRobotPlayer : sélectionne automatiquement le premier noble de la liste
+     *   (stratégie simple sans réflexion)
+     * 
+     * @param eligibleNobles Liste des nobles pour lesquels le joueur est éligible
+     *                       (taille >= 2, sinon cette méthode n'est pas appelée)
+     * @return Le noble choisi par le joueur (doit faire partie de eligibleNobles)
+     */
+    protected abstract Noble chooseNoble(List<Noble> eligibleNobles);
 
     
     // ============= MÉTHODES ABSTRAITES =============
@@ -274,41 +384,58 @@ public abstract class Player implements Displayable {
      * - L'identifiant et le nom du joueur (ex : "Player 1: Alice")
      * - Les points de prestige avec symbole Unicode circlé (①②③... ou ⓪ si 0 points)
      * - Pour chaque type de ressource : nombre de jetons entre () et nombre de bonus entre []
+     * - Les nobles obtenus sur la même ligne que la première ressource : ⚜N (nb) {points Pts}
+     *   où nb = nombre de nobles, points = total des points rapportés par les nobles
      * 
      * Exemple de rendu :
      * Player 1: Camille
-     * ②pts
+     * ⑤pts
      * 
-     * ♥R (3) [2]
+     * ♥R (3) [2]           ⚜N (1) {3 Pts}
      * ●O (1) [0]
      * ♣E (2) [1]
      * ♠S (0) [3]
      * ♦D (4) [1]
      * 
      * Les ressources sont affichées dans l'ordre inverse de l'énumération Resource
-     * pour correspondre au visuel attendu.
+     * (Rubis, Onyx, Emerald, Sapphire, Diamond) pour correspondre au visuel attendu.
+     * 
+     * L'information sur les nobles est toujours affichée sur la ligne de la première
+     * ressource (♥R), même si le joueur n'a aucun noble (dans ce cas : "⚜N (0) {0 Pts}").
      * 
      * @return un tableau de 8 String représentant l'état du joueur
      */
     public String[] toStringArray() {
         String pointStr = " ";
         String[] strPlayer = new String[8];
-
+    
+        // Affichage des points avec symbole Unicode circlé
         if(points > 0) {
             pointStr = new String(new int[] {getPoints() + 9311}, 0, 1);
         } else {
             pointStr = "\u24EA";
         }
-
+    
+        // Lignes 0-2 : Nom et points
         strPlayer[0] = "Player " + (id + 1) + ": " + name;
         strPlayer[1] = pointStr + "pts";
         strPlayer[2] = "";
         
+        // Lignes 3-7 : Ressources dans l'ordre inverse (Rubis, Onyx, Emerald, Sapphire, Diamond)
         for(Resource res : Resource.values()) {
             strPlayer[3 + (Resource.values().length - 1 - res.ordinal())] = 
                 res.toSymbol() + " (" + resources.getNbResource(res) + ") [" + getResFromCards(res) + "]";
         }
-
+        
+        // Ajouter les nobles sur la même ligne que la première ressource (index 3)
+        // Format : 👑N (nombre) {points Pts}
+        int nbNobles = this.purchasedNobles.size();
+        int ptsNobles = nbNobles * 3;  // Chaque noble vaut 3 points
+        String noblesInfo = "           \u269CN (" + nbNobles + ") {" + ptsNobles + " Pts}";
+        
+        strPlayer[3] += noblesInfo;  // Concaténer à la ligne de la première ressource (♥R)
+        
         return strPlayer;
     }
+
 }

@@ -354,18 +354,34 @@ public class HumanPlayer extends Player {
     /**
      * Gère l'interaction pour acheter une carte.
      * 
-     * Demande les coordonnées de la carte (niveau 1-3 et colonne 1-4), vérifie
-     * qu'une carte existe à cette position, et vérifie que le joueur a suffisamment
-     * de ressources (jetons + bonus) pour l'acheter.
+     * Demande les coordonnées de la carte (niveau 1-3 et colonne 1-4), demande
+     * confirmation de l'action, puis vérifie qu'une carte existe à cette position
+     * et que le joueur a suffisamment de ressources (jetons + bonus) pour l'acheter.
+     * 
+     * Processus détaillé :
+     * 1. Demande le niveau (1-3) - 0 pour annuler
+     * 2. Demande la colonne (1-4) - 0 pour annuler
+     * 3. Demande confirmation finale (O/N)
+     * 4. Vérifie que les coordonnées sont valides
+     * 5. Récupère la carte à cette position
+     * 6. Vérifie que le joueur peut acheter la carte avec canBuyCard()
      * 
      * En cas d'échec d'achat, affiche un détail complet :
-     * - Les ressources du joueur (jetons + bonus)
-     * - Le coût requis de la carte
-     * Ce qui permet au joueur de comprendre ce qui lui manque.
+     * - Les ressources du joueur (jetons + bonus par type)
+     * - Le coût requis de la carte (par type de ressource)
+     * Ce qui permet au joueur de comprendre exactement ce qui lui manque.
+     * 
+     * Gestion des erreurs :
+     * - Coordonnées invalides : propose de réessayer
+     * - Pas de carte à cette position : propose de réessayer
+     * - Ressources insuffisantes : affiche le détail et propose de choisir une autre carte
+     * 
+     * L'utilisateur peut taper 0 à tout moment (niveau ou colonne) pour annuler
+     * et retourner au menu principal.
      * 
      * @param scanner le scanner pour lire les entrées utilisateur
      * @param board le plateau de jeu pour récupérer la carte
-     * @return l'action BuyCardAction créée, ou null pour retour au menu
+     * @return l'action BuyCardAction créée avec la carte choisie, ou null pour retour au menu
      */
     private Action askBuyCard(Scanner scanner, Board board) {
         Game.display.out.println("\n--- Achat de carte (tapez 0 pour annuler) ---");
@@ -579,4 +595,82 @@ public class HumanPlayer extends Player {
         
         return discard;
     }
+    
+    /**
+     * Permet au joueur humain de choisir un noble parmi plusieurs nobles éligibles.
+     * 
+     * Cette méthode est appelée uniquement quand le joueur devient éligible pour
+     * plusieurs nobles en même temps après avoir acheté une carte. Elle affiche
+     * la liste des nobles disponibles avec leur coût et demande au joueur de choisir
+     * interactivement lequel obtenir.
+     * 
+     * Processus :
+     * 1. Affiche un message indiquant le nombre de nobles éligibles
+     * 2. Liste tous les nobles avec leurs numéros et leurs coûts en bonus
+     * 3. Demande au joueur de choisir un numéro entre 1 et N (N = nombre de nobles)
+     * 4. Valide l'entrée (doit être un nombre dans la plage correcte)
+     * 5. Redemande en cas d'erreur (lettre, nombre hors limites, etc.)
+     * 6. Retourne le noble choisi
+     * 
+     * Exemple d'affichage :
+     * ⚜ Vous pouvez obtenir 2 noble(s) !
+     * 
+     * Noble 1 : 3♦ 3♠ 3♣
+     * Noble 2 : 4♥ 4●
+     * 
+     * Lequel voulez-vous ? (1-2) : _
+     * 
+     * Gestion des erreurs :
+     * - Entrée non numérique : affiche "❌ Erreur : veuillez entrer un nombre valide"
+     * - Nombre hors limites : affiche "❌ Choix invalide. Veuillez entrer entre 1 et N"
+     * - Redemande jusqu'à obtenir une entrée valide
+     * 
+     * Note : Cette méthode ne sera JAMAIS appelée si un seul noble est éligible.
+     * Dans ce cas, Player.checkAndObtainNobles() attribue directement le noble
+     * sans appeler cette méthode.
+     * 
+     * @param eligibleNobles Liste des nobles pour lesquels le joueur est éligible.
+     *                       Taille toujours >= 2 (sinon cette méthode n'est pas appelée)
+     * @return Le noble choisi par le joueur (un élément de eligibleNobles)
+     */
+    @Override
+    protected Noble chooseNoble(List<Noble> eligibleNobles) {
+        Game.display.out.println("\n \u269C Vous pouvez obtenir " + eligibleNobles.size() + " noble(s) !");
+        
+        // Afficher les nobles éligibles
+        for (int i = 0; i < eligibleNobles.size(); i++) {
+            Game.display.out.print("\n Noble " + (i + 1) + " : ");
+            // Afficher le coût du noble
+            Resources cost = eligibleNobles.get(i).getCost();
+            Game.display.out.print(cost.toString());
+            Game.display.out.println();
+        }
+        
+        // Demander le choix
+        Scanner scanner = new Scanner(Game.display.in);
+        int choice = 0;
+        boolean validInput = false;
+        
+        while (!validInput) {
+            Game.display.out.print("\nLequel voulez-vous ? (1-" + eligibleNobles.size() + ") : ");
+            try {
+                choice = scanner.nextInt();
+                scanner.nextLine(); // Consommer le retour à la ligne
+                Game.display.out.print(choice);
+                Game.display.out.println();
+                
+                if (choice >= 1 && choice <= eligibleNobles.size()) {
+                    validInput = true;
+                } else {
+                    Game.display.out.println("❌ Choix invalide. Veuillez entrer entre 1 et " + eligibleNobles.size());
+                }
+            } catch (Exception e) {
+                Game.display.out.println("❌ Erreur : veuillez entrer un nombre valide");
+                scanner.nextLine(); // Vider le buffer
+            }
+        }
+        
+        return eligibleNobles.get(choice - 1);  // choice est 1-indexé, List est 0-indexé
+    }
+
 }

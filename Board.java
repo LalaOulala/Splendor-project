@@ -52,22 +52,63 @@ public class Board implements Displayable {
      */
     private Resources resources;
     
+    /**
+     * Liste des nobles actuellement disponibles sur le plateau.
+     * 
+     * Le nombre initial de nobles dépend du nombre de joueurs :
+     * - 2 joueurs : 3 nobles
+     * - 3 joueurs : 4 nobles
+     * - 4 joueurs : 5 nobles
+     * 
+     * Quand un joueur obtient un noble, celui-ci est retiré de cette liste
+     * avec removeNoble(). L'emplacement vide est visuellement représenté
+     * par un rectangle avec des tirets dans l'affichage.
+     */
+    private ArrayList<Noble> visibleNobles;
+    
+    /**
+     * Nombre initial d'emplacements de nobles au début de la partie.
+     * 
+     * Cet attribut stocke le nombre de nobles tirés initialement et sert
+     * à afficher le bon nombre d'emplacements (vides ou occupés) même après
+     * que des nobles ont été pris.
+     * 
+     * Par exemple, dans une partie à 3 joueurs, nbNoblesSlots vaut 4.
+     * Si 2 nobles ont été pris, visibleNobles.size() vaut 2, mais on continue
+     * d'afficher 4 emplacements (2 nobles + 2 rectangles vides).
+     * 
+     * Nécessaire car les méthodes private du constructeur empêchent de récupérer
+     * le nombre de joueurs plus tard pour calculer dynamiquement le nombre d'emplacements.
+     */
+    private int nbNoblesSlots;
     
     /**
      * Constructeur du plateau de jeu.
      * Initialise complètement le plateau en plusieurs étapes :
+     * 
+     * CARTES :
      * 1. Création des structures de données (piles, cartes visibles, ressources)
-     * 2. Lecture du fichier stats.csv et création de toutes les cartes
+     * 2. Lecture du fichier stats.csv et création de toutes les cartes de développement
      * 3. Mélange aléatoire des 3 piles de cartes
      * 4. Révélation de 4 cartes par niveau
-     * 5. Initialisation des jetons selon le nombre de joueurs
      * 
-     * Nombre de jetons par type selon les règles :
-     * - 2 joueurs : 4 jetons
-     * - 3 joueurs : 5 jetons
-     * - 4 joueurs : 7 jetons
+     * JETONS :
+     * 5. Initialisation des jetons selon le nombre de joueurs :
+     *    - 2 joueurs : 4 jetons par type
+     *    - 3 joueurs : 5 jetons par type
+     *    - 4 joueurs : 7 jetons par type
+     * 
+     * NOBLES :
+     * 6. Lecture des nobles dans stats.csv (lignes avec tier = 0)
+     * 7. Mélange aléatoire de tous les nobles disponibles
+     * 8. Tirage du bon nombre de nobles selon le nombre de joueurs :
+     *    - 2 joueurs : 3 nobles
+     *    - 3 joueurs : 4 nobles
+     *    - 4 joueurs : 5 nobles
+     * 9. Stockage du nombre initial de nobles dans nbNoblesSlots
      * 
      * @param nbPlayers nombre de joueurs (2, 3 ou 4)
+     * @throws FileNotFoundException si le fichier stats.csv n'est pas trouvé
      */
     public Board(int nbPlayers) {
         
@@ -87,6 +128,9 @@ public class Board implements Displayable {
         }
         resources = new Resources(nombreJetons, nombreJetons, nombreJetons, nombreJetons, nombreJetons);
         
+        // Initialisation Nobles
+        this.visibleNobles = new ArrayList<Noble>();
+        ArrayList<Noble> allNobles = new ArrayList<Noble>();
         
         // Lecture du fichier CSV et création des cartes
         try {
@@ -112,7 +156,7 @@ public class Board implements Displayable {
                 // Extraction des points de prestige
                 int pointsCarte = Integer.parseInt(donnees[6]);
                 
-                // Ignorer les nobles (tier = 0) car non implémentés dans la version simplifiée
+                // Cartes developpement (pas Nobles)
                 if (tierCarte != 0) {
                     // Extraction du type de ressource
                     Resource typeCarte = Resource.valueOf(donnees[7]);
@@ -120,6 +164,12 @@ public class Board implements Displayable {
                     // Création de la carte et ajout à sa pile respective
                     DevCard carte = new DevCard(tierCarte, coutCarte, pointsCarte, typeCarte);
                     stackCards[tierCarte - 1].push(carte);
+                    
+                    // Cartes Nobles
+                } else{
+                    // Créer le noble et l'ajouter à la liste temporaire
+                    Noble noble = new Noble(coutCarte, pointsCarte);
+                    allNobles.add(noble);
                 }
             }
             
@@ -130,12 +180,11 @@ public class Board implements Displayable {
             e.printStackTrace();
         }
         
-        
+        // Cartes :
         // Mélange des 3 piles pour randomiser l'ordre des cartes
         Collections.shuffle(stackCards[0]);
         Collections.shuffle(stackCards[1]);
         Collections.shuffle(stackCards[2]);
-        
         
         // Révélation des 4 premières cartes de chaque pile
         for (int tier = 0; tier < 3; tier++) {
@@ -143,8 +192,19 @@ public class Board implements Displayable {
                 visibleCards[tier][colonne] = stackCards[tier].pop();
             }
         }
+        
+        // Nobles :
+        // Mélanger tous les nobles
+        Collections.shuffle(allNobles);
+           
+        // Tirer le bon nombre de nobles selon le nombre de joueurs
+        int nbNoblesToDraw = nbPlayers + 1;
+        for (int i = 0; i < nbNoblesToDraw; i++) {
+            this.visibleNobles.add(allNobles.get(i));
+        }
+        
+        this.nbNoblesSlots = nbNoblesToDraw;
     }
-    
     
     // ============= GESTION DES JETONS =============
     
@@ -247,6 +307,77 @@ public class Board implements Displayable {
         return null;
     }
     
+    // ============= GESTION DES NOBLES ===============
+    
+    /**
+     * Retourne la liste des nobles actuellement disponibles sur le plateau.
+     * 
+     * Cette liste diminue au fur et à mesure que les joueurs obtiennent des nobles.
+     * Elle ne contient que les nobles encore disponibles (pas les emplacements vides).
+     * 
+     * @return ArrayList contenant uniquement les nobles non encore obtenus
+     */
+    public ArrayList<Noble> getVisibleNobles() {
+        return this.visibleNobles;
+    }
+    
+    /**
+     * Retire un noble du plateau quand un joueur l'obtient.
+     * 
+     * Recherche le noble dans visibleNobles et le supprime de la liste.
+     * Cette méthode est appelée automatiquement par Player.checkAndObtainNobles()
+     * après qu'un noble a été attribué à un joueur.
+     * 
+     * L'emplacement du noble retiré sera visuellement représenté par un rectangle
+     * vide dans boardToStringArray() grâce à nbNoblesSlots qui conserve le nombre
+     * initial d'emplacements.
+     * 
+     * @param noble Le noble à retirer de la liste des nobles disponibles
+     * @return true si le noble a été trouvé et retiré avec succès, 
+     *         false si le noble n'était pas dans la liste
+     */
+    public boolean removeNoble(Noble noble) {
+        return this.visibleNobles.remove(noble);
+    }
+    
+    /**
+     * Vérifie si un joueur peut obtenir un noble donné.
+     * 
+     * Un joueur peut obtenir un noble s'il possède suffisamment de bonus de cartes
+     * (cartes achetées) pour chaque type de ressource requis par le noble.
+     * 
+     * Important : Ce sont les BONUS de cartes qui comptent, pas les jetons possédés.
+     * Par exemple, si un noble coûte "3 diamants, 3 saphirs", le joueur doit avoir
+     * au moins 3 cartes qui produisent du diamant ET 3 cartes qui produisent du saphir.
+     * 
+     * Processus de vérification :
+     * 1. Récupère le coût du noble (Resources contenant les bonus requis)
+     * 2. Pour chaque type de ressource dans le coût :
+     *    - Compare le nombre requis avec le nombre de bonus du joueur (via getResFromCards())
+     *    - Si une seule ressource est insuffisante : retourne false
+     * 3. Si toutes les ressources sont suffisantes : retourne true
+     * 
+     * @param noble Le noble dont on vérifie l'éligibilité
+     * @param player Le joueur dont on vérifie les bonus de cartes
+     * @return true si le joueur a tous les bonus requis pour obtenir ce noble,
+     *         false si au moins un bonus est insuffisant
+     */
+    public boolean canObtainNoble(Noble noble, Player player) {
+        Resources cost = noble.getCost();
+        
+        // Vérifier pour chaque type de ressource
+        for (Resource res : Resource.values()) {
+            int required = cost.getNbResource(res);
+            int owned = player.getResFromCards(res);
+            
+            // Si le joueur n'a pas assez de bonus pour cette ressource
+            if (owned < required) {
+                return false;
+            }
+        }
+        
+        return true; // Le joueur a tous les bonus requis
+    }
     
     // ============= VÉRIFICATIONS DES ACTIONS POSSIBLES =============
     
@@ -360,27 +491,122 @@ public class Board implements Displayable {
     }
     
     /**
-     * Génère la représentation complète du plateau de jeu.
-     * Assemble visuellement :
-     * - Les 3 piles de cartes faces cachées (à gauche)
-     * - Les 12 cartes visibles organisées par niveau (à droite)
-     * - Les ressources disponibles (en bas)
+     * Génère la représentation complète du plateau de jeu en ASCII art.
      * 
-     * Utilise la classe Display pour concaténer les différents éléments
-     * en respectant l'alignement et les espacements.
+     * Assemble visuellement en 5 étapes :
      * 
-     * @return un tableau de String représentant tout le plateau
+     * ÉTAPE 1 - NOBLES (en haut, centrés) :
+     * - Affiche les nobles disponibles et les emplacements vides (nobles pris)
+     * - Nombre total d'emplacements = Math.max(nobles actuels, nbNoblesSlots)
+     * - Centrage horizontal calculé selon le nombre d'emplacements (3, 4 ou 5)
+     * - Utilise Noble.toStringArray() pour les nobles disponibles
+     * - Utilise Noble.noNobleStringArray() pour les emplacements vides
+     * - Concaténation MANUELLE sans Display.concatStringArray() pour éviter le padding parasite
+     * 
+     * ÉTAPE 2 - PILES FACES CACHÉES (à gauche, verticalement) :
+     * - Affiche les 3 piles dans l'ordre tier 3, 2, 1 (de haut en bas)
+     * - Chaque pile montre le nombre de cartes restantes
+     * - Utilise deckToStringArray(tier)
+     * 
+     * ÉTAPE 3 - CARTES VISIBLES (au centre, par niveau) :
+     * - Affiche 3 rangées de 4 cartes (niveaux 3, 2, 1 de haut en bas)
+     * - Chaque carte visible utilise DevCard.toStringArray()
+     * - Les emplacements vides (pile épuisée) utilisent DevCard.noCardStringArray()
+     * 
+     * ÉTAPE 4 - ASSEMBLAGE :
+     * - Concatène horizontalement les piles et les cartes
+     * - Ajoute un décalage vers la droite pour l'alignement visuel
+     * - Le décalage varie selon le nombre de nobles (1 ou 6 espaces)
+     * 
+     * ÉTAPE 5 - RESSOURCES ET BORDURES :
+     * - Affiche les jetons disponibles en bas
+     * - Ajoute les bordures décoratives (lignes verticales et horizontales)
+     * - Correction manuelle de la 3e ligne pour éviter les espaces parasites
+     *   liés aux symboles Unicode larges des nobles
+     * 
+     * Dimensions finales :
+     * - Largeur : 58-69 caractères selon le nombre de nobles
+     * - Hauteur : 35-36 lignes selon le nombre de nobles
+     * 
+     * Note importante : L'affichage des nobles utilise une concaténation manuelle
+     * pour éviter les problèmes de padding causés par le symbole ⚜ (2 caractères
+     * d'affichage) qui n'est pas reconnu par Display.displayedLength().
+     * 
+     * @return Un tableau de String représentant tout le plateau de jeu
      */
     private String[] boardToStringArray() {
         String[] res = Display.emptyStringArray(0, 0);
         
-        // Affichage des piles faces cachées (niveau 3, 2, 1 de haut en bas)
+        // ========== ÉTAPE 1 : Affichage des NOBLES (EN HAUT, CENTRÉS) ==========
+        
+        int nbNobles = visibleNobles.size();
+        
+        // Calculer le nombre total d'emplacements nobles (pris ou non)
+        int totalSlots = Math.max(nbNobles, nbNoblesSlots);
+        
+        if (nbNobles > 0 || nbNoblesSlots > 0) {
+            // Créer l'affichage des nobles
+            String[] noblesDisplay = Display.emptyStringArray(4, 0);  // 4 lignes pour les nobles
+            
+            for (int i = 0; i < totalSlots; i++) {
+                String[] nobleSlot;
+                
+                // Vérifier si un noble existe à cet index
+                if (i < visibleNobles.size()) {
+                    // Noble existe encore
+                    nobleSlot = visibleNobles.get(i).toStringArray();
+                } else {
+                    // Noble a été pris, afficher un emplacement vide
+                    nobleSlot = Noble.noNobleStringArray();
+                }
+                
+                // Concaténer horizontalement (false = côte à côte)
+                if (noblesDisplay.length == 0) {
+                    noblesDisplay = nobleSlot;
+                } else {
+                    // Concaténation manuelle horizontale SANS padding
+                    String[] temp = new String[nobleSlot.length];
+                    for (int j = 0; j < nobleSlot.length; j++) {
+                        temp[j] = noblesDisplay[j] + nobleSlot[j];
+                    }
+                    noblesDisplay = temp;
+                }
+            }
+            
+            // ✅ CENTRER les nobles
+            int padding = 0;
+            if (totalSlots == 3) {
+                padding = 9;  // (56 - 39) / 2 = 8
+            } else if (totalSlots == 4) {
+                padding = 2;  // (56 - 52) / 2 = 2
+            } else if (totalSlots == 5) {
+                padding = 1;
+            }
+            
+            if (padding > 0) {
+                String gPadding = " ".repeat(padding);
+                for (int i = 0; i < noblesDisplay.length; i++) {
+                    noblesDisplay[i] = gPadding + noblesDisplay[i] + gPadding;
+                }
+            }
+            
+            // Ajouter une ligne vide avant les nobles
+            res = Display.concatStringArray(res, Display.emptyStringArray(1, 55), true);
+            
+            // Ajouter les nobles au plateau
+            res = Display.concatStringArray(res, noblesDisplay, true);
+            
+            // Ajouter une ligne vide après les nobles
+            res = Display.concatStringArray(res, Display.emptyStringArray(1, 55), true);
+        }
+        
+        // ========== ÉTAPE 2 : Affichage des piles faces cachées (niveau 3, 2, 1 de haut en bas) ==========
         String[] deckDisplay = Display.emptyStringArray(0, 0);
         for (int i = 3; i > 0; i--) {
             deckDisplay = Display.concatStringArray(deckDisplay, deckToStringArray(i), true);
         }
         
-        // Affichage des cartes visibles (niveau 3, 2, 1 de haut en bas)
+        // ========== ÉTAPE 3 : Affichage des cartes visibles (niveau 3, 2, 1 de haut en bas) ==========
         String[] carteDisplay = Display.emptyStringArray(0, 0);
         for (int i = 2; i >= 0; i--) {
             String[] tierCardsDisplay = Display.emptyStringArray(8, 0);
@@ -398,21 +624,69 @@ public class Board implements Displayable {
             carteDisplay = Display.concatStringArray(carteDisplay, tierCardsDisplay, true);
         }
         
-        // Assemblage final : piles + cartes + ressources + bordures
-        res = Display.concatStringArray(deckDisplay, carteDisplay, false);
-        res = Display.concatStringArray(res, Display.emptyStringArray(1, 52), true);
-        res = Display.concatStringArray(res, resourcesToStringArray(), true);
-        res = Display.concatStringArray(res, Display.emptyStringArray(35, 1, " \u250A"), false);
-        res = Display.concatStringArray(res, Display.emptyStringArray(1, 54, "\u2509"), true);
+        // ========== ÉTAPE 4 : Assemblage piles + cartes ==========
+        // ✅ Ajouter un espace entre les piles et les cartes
+        for (int i = 0; i < deckDisplay.length; i++) {
+            deckDisplay[i] = deckDisplay[i] + " ";
+        }
+        
+        String[] plateauCartes = Display.concatStringArray(deckDisplay, carteDisplay, false);
+        
+        int leftPaddingPlateau = 1;
+        if (totalSlots == 5){
+            leftPaddingPlateau = 6;
+        }
+        
+        // ✅ Décaler TOUT de 1 espace vers la droite : ça rends mieux niveau visuel
+        for (int i = 0; i < plateauCartes.length; i++) {
+            plateauCartes[i] = " ".repeat(leftPaddingPlateau) + plateauCartes[i];
+        }
+        
+        // Ajouter les cartes sous les nobles
+        res = Display.concatStringArray(res, plateauCartes, true);
+        
+        // ========== ÉTAPE 5 : Affichage des ressources + bordures finales ==========
+        res = Display.concatStringArray(res, Display.emptyStringArray(1, 55), true);
+        
+        String[] resourcesDisplay = resourcesToStringArray();
+
+        for (int i = 0; i < resourcesDisplay.length; i++) {
+            resourcesDisplay[i] = " ".repeat(leftPaddingPlateau) + resourcesDisplay[i];
+        }
+        
+        res = Display.concatStringArray(res, resourcesDisplay, true);
+        
+        int vertical = 36;
+        int horizontal = 59;
+        if (totalSlots == 4){
+            horizontal = 58;
+        } else if (totalSlots == 5){
+            vertical = 35;
+            horizontal = 69;
+        }
+        
+        res = Display.concatStringArray(res, Display.emptyStringArray(vertical, 1, " \u250A"), false);
+        res = Display.concatStringArray(res, Display.emptyStringArray(1, horizontal, "\u2509"), true);
+        
+        if (res.length > 2) {
+            String line = res[2];
+            res[2] = line.substring(0, line.length() - (visibleNobles.size()+1)) + "\u250A";
+        }
         
         return res;
     }
+
+
+
     
     /**
      * Implémentation de l'interface Displayable.
-     * Retourne la représentation complète du plateau pour l'affichage.
+     * Retourne la représentation complète du plateau pour l'affichage dans le terminal.
      * 
-     * @return un tableau de String représentant le plateau complet
+     * Délègue simplement à boardToStringArray() qui génère l'ASCII art complet
+     * incluant les nobles, les cartes, et les ressources.
+     * 
+     * @return Un tableau de String représentant le plateau complet
      */
     @Override
     public String[] toStringArray() {

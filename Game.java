@@ -95,7 +95,12 @@ public class Game {
             }
         }
         Game game = new Game(nbPlayers);  
-        game.play();                      
+        game.play(); 
+        
+        // ✅ PAUSE AVANT DE FERMER
+        display.out.println("\nAppuyez sur Entrée pour fermer le jeu...");
+        new Scanner(display.in).nextLine();
+        
         display.close();
     }
 
@@ -232,20 +237,44 @@ public class Game {
     /**
      * Annonce le gagnant de la partie et gère les égalités.
      * 
-     * Processus de détermination du gagnant :
-     * 1. Trouver le score maximum parmi tous les joueurs
-     * 2. Lister tous les joueurs ayant ce score (candidats)
-     * 3. En cas d'égalité : départage par le nombre de cartes achetées
-     *    - Le joueur ayant le MOINS de cartes gagne (efficacité)
-     * 4. Si l'égalité persiste : partie nulle
+     * Processus de détermination du gagnant selon les règles officielles de Splendor :
      * 
-     * Affiche le résultat avec émojis et détails du score final.
-     */
+     * ÉTAPE 1 - Trouver le score maximum :
+     * - Parcourt tous les joueurs
+     * - Identifie le nombre de points le plus élevé
+     * 
+     * ÉTAPE 2 - Lister les candidats :
+     * - Crée une liste de tous les joueurs ayant le score maximum
+     * - Si un seul candidat : il a gagné (passe à l'annonce)
+     * - Si plusieurs candidats : égalité, passage à l'étape 3
+     * 
+     * ÉTAPE 3 - Départage par le nombre de cartes :
+     * - Affiche "Égalité à X points !"
+     * - Liste chaque candidat avec son nombre de cartes achetées
+     * - Le joueur ayant le MOINS de cartes gagne (plus efficace)
+     * - Rationale : gagner avec moins de cartes = meilleure stratégie
+     * - Note : Les nobles SONT comptés dans getNbPurchasedCards() ? NON, seulement 
+     *   dans purchasedNobles. Le départage se fait sur les cartes de développement.
+     * 
+     * ÉTAPE 4 - Annonce finale :
+     * - Si un seul gagnant après départage : affiche son nom avec émojis ✧✶✧
+     * - Si égalité persiste (même points ET même nombre de cartes) : partie nulle
+     * - Affiche le score final et le nombre de cartes
+     * 
+     * Format d'affichage :
+     * ================ FIN DE LA PARTIE ================
+     * 
+     * ✧✶✧ [Nom] remporte la partie ! ✧✶✧
+     * 
+     * Score final : X points
+     * Cartes achetées : Y
+     * 
+     * ==================================================
+    */
     private void gameOver() {
-        display.out.println("\n" + "=".repeat(50));
-        display.out.println("========== FIN DE LA PARTIE ==========");
-        display.out.println("=".repeat(50));
-        
+        display.out.println();
+        display.out.println("================ FIN DE LA PARTIE ================");
+        display.out.println();
         // ========== TROUVER LE SCORE MAXIMUM ==========
         int maxPoints = 0;
         for (Player player : players) {
@@ -287,20 +316,31 @@ public class Game {
             // ========== ANNONCE DU/DES GAGNANT(S) ==========
             if (winners.size() == 1) {
                 Player winner = winners.get(0);
-                display.out.println("\n🎉 " + winner.getName() + " remporte la partie !");
+                display.out.println("\n \u2727\u2756\u2727 " + winner.getName() + " remporte la partie ! \u2727\u2756\u2727");
                 display.out.println("Score : " + maxPoints + " points avec " + winner.getNbPurchasedCards() + " cartes");
             } else {
                 // Partie nulle (même nombre de points ET même nombre de cartes)
-                display.out.print("\n🤝 Partie nulle entre : ");
+                display.out.println("\u2727\u2756\u2727");
+                display.out.print("\n Partie nulle entre : ");
+                boolean virgule = false;
                 for (Player winner : winners) {
-                    display.out.print(winner.getName() + " ");
+                    if (!virgule){
+                        display.out.print(winner.getName());
+                        virgule = true;
+                    } else{
+                        display.out.print(", ");
+                        display.out.print(winner.getName());
+                    }
                 }
+                display.out.println();
                 display.out.println("\nScore : " + maxPoints + " points avec " + winners.get(0).getNbPurchasedCards() + " cartes");
+                display.out.println("\u2727\u2756\u2727");
             }
         } else {
             // ========== GAGNANT UNIQUE ==========
             Player winner = candidates.get(0);
-            display.out.println("\n🎉🎉🎉 " + winner.getName() + " remporte la partie ! 🎉🎉🎉");
+            display.out.println("\n \u2727\u2756\u2727 " + winner.getName() + " remporte la partie ! \u2727\u2756\u2727");
+            display.out.println();
             display.out.println("Score final : " + maxPoints + " points");
             display.out.println("Cartes achetées : " + winner.getNbPurchasedCards());
         }
@@ -397,33 +437,57 @@ public class Game {
     /**
      * Gère le tour complet d'un joueur.
      * 
-     * Processus :
-     * 1. Récupère le joueur actuel
-     * 2. Le joueur choisit une action (via chooseAction qui peut reboucler si annulation)
-     * 3. L'action est exécutée (modifie l'état du plateau et/ou du joueur)
-     * 4. L'action effectuée est affichée dans la console
+     * Processus détaillé :
+     * 1. Récupère le joueur actuel depuis la liste players
+     * 2. Affiche un message annonçant le tour du joueur
+     * 3. Le joueur choisit une action via chooseAction() 
+     *    - Peut reboucler (action = null) si le joueur annule et retourne au menu
+     *    - Boucle jusqu'à obtenir une action valide non-null
+     * 4. L'action est exécutée via process() (modifie l'état du plateau et/ou du joueur)
+     * 5. L'action effectuée est affichée dans la console
+     * 6. VÉRIFICATION DES NOBLES : Si l'action était un achat de carte (BuyCardAction),
+     *    vérifie automatiquement si le joueur devient éligible pour obtenir un noble
+     *    - Appelle player.checkAndObtainNobles(board)
+     *    - Si le joueur est éligible, il obtient automatiquement un noble (max 1 par tour)
+     *    - Le message d'obtention du noble est affiché par checkAndObtainNobles()
+     * 7. Appelle discardToken() pour gérer la limite de 10 jetons
      * 
-     * Grâce au polymorphisme, cette méthode fonctionne de la même façon pour
-     * un humain ou un robot, chacun ayant sa propre implémentation de chooseAction().
+     * Gestion d'erreurs :
+     * - Tout le tour est encadré dans un try-catch
+     * - En cas d'erreur, affiche le message et la stack trace
+     * - Le jeu continue (ne plante pas)
      * 
-     * @param currentPlayer indice du joueur dans la liste players
+     * @param currentPlayer indice du joueur dans la liste players (0 à nbPlayers-1)
      */
     private void move(int currentPlayer) {
-        Player player = players.get(currentPlayer);
-        
-        display.out.println("\n--- Tour de " + player.getName() + " ---");
-        
-        // Le joueur choisit son action (peut reboucler si retour en arrière)
-        Action action = null;
-        while (action == null) {
-            action = player.chooseAction(board);
-        }
-        
-        // Exécuter l'action
-        action.process(board, player);
-        
-        // Afficher ce qui s'est passé
-        display.out.println("→ " + player.getName() + " : " + action.toString());
+        try{
+            Player player = players.get(currentPlayer);
+            
+            display.out.println("\n--- Tour de " + player.getName() + " ---");
+            
+            // Le joueur choisit son action (peut reboucler si retour en arrière)
+            Action action = null;
+            while (action == null) {
+                action = player.chooseAction(board);
+            }
+            
+            // Exécuter l'action
+            action.process(board, player);
+            
+            // Afficher ce qui s'est passé
+            display.out.println("→ " + player.getName() + " : " + action.toString());
+            // Seulement si c'est un achat de carte (BuyCardAction)
+            if (action instanceof BuyCardAction) {
+                player.checkAndObtainNobles(board);
+            }
+            
+            // Gérer la défausse si le joueur a plus de 10 jetons
+            discardToken(currentPlayer);
+            
+        } catch (Exception e) {
+            Game.display.out.println("⚠️ Erreur pendant le tour : " + e.getMessage());
+            e.printStackTrace();
+    }
     }
 
 

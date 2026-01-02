@@ -132,4 +132,29 @@ public class DumbRobotPlayer extends Player {
         
         return discard;
     }
+    
+    /**
+     * Choisit un noble parmi plusieurs nobles éligibles selon la stratégie du robot stupide.
+     * 
+     * Le robot applique la stratégie la plus simple possible : il choisit toujours
+     * le premier noble de la liste (index 0), sans réfléchir ni analyser les coûts
+     * ou les avantages futurs.
+     * 
+     * Cette méthode est appelée uniquement quand le robot devient éligible pour
+     * plusieurs nobles en même temps après avoir acheté une carte.
+     * 
+     * Stratégie :
+     * - Pas d'analyse des nobles
+     * - Pas de comparaison des coûts
+     * - Choix systématique du premier élément de la liste
+     * 
+     * @param eligibleNobles Liste des nobles pour lesquels le robot est éligible.
+     *                       Taille toujours >= 2 (sinon cette méthode n'est pas appelée)
+     * @return Le premier noble de la liste (eligibleNobles.get(0))
+     */
+    @Override
+    protected Noble chooseNoble(List<Noble> eligibleNobles) {
+        // Le robot prend toujours le premier noble (le plus simple)
+        return eligibleNobles.get(0);
+    }
 }

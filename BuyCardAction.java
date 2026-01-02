@@ -49,26 +49,31 @@ public class BuyCardAction implements Action {
      * 
      * @param board le plateau de jeu (reçoit les jetons payés, remplace la carte)
      * @param player le joueur qui effectue l'action (paie et reçoit la carte)
-     */
+         */
     @Override
     public void process(Board board, Player player) {
         Resources cost = card.getCost();
         
+        // Calculer le coût réel en tenant compte des bonus
         for (Resource res : Resource.values()) {
             int required = cost.getNbResource(res);
             int bonus = player.getResFromCards(res);
             int toPay = Math.max(0, required - bonus);
             
             if (toPay > 0) {
+                // Payer : retirer du joueur, ajouter au plateau
                 player.updateNbResource(res, -toPay);
                 board.updateNbResource(res, toPay);
             }
         }
         
+        // Ajouter la carte au joueur (ajoute aussi les points automatiquement)
         player.addPurchasedCard(card);
+        
+        // Remplacer la carte achetée par une nouvelle de la pile
         board.updateCard(card);
     }
-    
+
     /**
      * Retourne une description de l'action avec les détails de la carte.
      * Utilise la méthode toString() de DevCard pour afficher le coût et les points.
