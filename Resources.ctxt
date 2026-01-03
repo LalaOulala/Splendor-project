@@ -1,25 +1,28 @@
 #BlueJ class context
 comment0.target=Resources
-comment0.text=\r\n\ Classe\ repr\u00E9sentant\ une\ liste\ de\ ressources\ (jetons)\ dans\ le\ jeu\ Splendor.\r\n\ \r\n\ Cette\ classe\ est\ utilis\u00E9e\ pour\ stocker\ des\ quantit\u00E9s\ de\ ressources\ dans\ trois\ contextes\ \:\r\n\ -\ Le\ co\u00FBt\ d'une\ carte\ de\ d\u00E9veloppement\r\n\ -\ Les\ jetons\ disponibles\ sur\ le\ plateau\ de\ jeu\r\n\ -\ Les\ jetons\ poss\u00E9d\u00E9s\ par\ chaque\ joueur\r\n\ \r\n\ Impl\u00E9mentation\ \:\ utilise\ un\ tableau\ d'entiers\ avec\ un\ ordre\ fixe\ correspondant\r\n\ \u00E0\ l'\u00E9num\u00E9ration\ Resource\ (DIAMOND,\ SAPPHIRE,\ EMERALD,\ ONYX,\ RUBY).\r\n\ L'acc\u00E8s\ aux\ ressources\ se\ fait\ via\ la\ m\u00E9thode\ ordinal()\ de\ l'\u00E9num\u00E9ration.\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 01/01/2026\r\n
+comment0.text=\r\n\ Classe\ repr\u00E9sentant\ une\ liste\ de\ ressources\ (jetons)\ dans\ le\ jeu\ Splendor.\r\n\ \r\n\ Cette\ classe\ est\ utilis\u00E9e\ pour\ stocker\ des\ quantit\u00E9s\ de\ ressources\ dans\ trois\ contextes\ \:\r\n\ -\ Le\ co\u00FBt\ d'une\ carte\ de\ d\u00E9veloppement\r\n\ -\ Les\ jetons\ disponibles\ sur\ le\ plateau\ de\ jeu\r\n\ -\ Les\ jetons\ poss\u00E9d\u00E9s\ par\ chaque\ joueur\r\n\ \r\n\ Impl\u00E9mentation\ \:\ utilise\ un\ tableau\ d'entiers\ avec\ un\ ordre\ fixe\ correspondant\r\n\ \u00E0\ l'\u00E9num\u00E9ration\ Resource\ (DIAMOND,\ SAPPHIRE,\ EMERALD,\ ONYX,\ RUBY,\ GOLD).\r\n\ L'acc\u00E8s\ aux\ ressources\ se\ fait\ via\ la\ m\u00E9thode\ ordinal()\ de\ l'\u00E9num\u00E9ration.\r\n\ \r\n\ @author\ FONFREIDE\ Quentin\r\n\ @version\ 02/01/2026\r\n
 comment1.params=
 comment1.target=Resources()
 comment1.text=\r\n\ Constructeur\ par\ d\u00E9faut.\r\n\ Initialise\ toutes\ les\ ressources\ \u00E0\ 0.\r\n
 comment2.params=diamond\ sapphire\ emerald\ onyx\ ruby
 comment2.target=Resources(int,\ int,\ int,\ int,\ int)
 comment2.text=\r\n\ Constructeur\ avec\ valeurs\ initiales.\r\n\ Permet\ de\ cr\u00E9er\ directement\ un\ objet\ Resources\ avec\ des\ quantit\u00E9s\ sp\u00E9cifiques.\r\n\ \r\n\ @param\ diamond\ nombre\ de\ diamants\r\n\ @param\ sapphire\ nombre\ de\ saphirs\r\n\ @param\ emerald\ nombre\ d'\u00E9meraudes\r\n\ @param\ onyx\ nombre\ d'onyx\r\n\ @param\ ruby\ nombre\ de\ rubis\r\n
-comment3.params=res
-comment3.target=int\ getNbResource(Resource)
-comment3.text=\r\n\ Retourne\ le\ nombre\ de\ ressources\ disponibles\ pour\ un\ type\ donn\u00E9.\r\n\ Utilise\ la\ m\u00E9thode\ ordinal()\ de\ l'\u00E9num\u00E9ration\ pour\ acc\u00E9der\ directement\r\n\ \u00E0\ l'index\ correspondant\ dans\ le\ tableau.\r\n\ \r\n\ @param\ res\ le\ type\ de\ ressource\ \u00E0\ consulter\r\n\ @return\ le\ nombre\ de\ ressources\ de\ ce\ type\ (toujours\ >\=\ 0)\r\n
-comment4.params=res\ nb
-comment4.target=void\ setNbResource(Resource,\ int)
-comment4.text=\r\n\ Modifie\ le\ nombre\ de\ ressources\ d'un\ type\ donn\u00E9\ (mutateur).\r\n\ Cette\ m\u00E9thode\ est\ principalement\ utilis\u00E9e\ lors\ de\ l'initialisation\r\n\ du\ plateau\ de\ jeu\ pour\ d\u00E9finir\ le\ nombre\ de\ jetons\ disponibles\r\n\ selon\ le\ nombre\ de\ joueurs.\r\n\ \r\n\ @param\ res\ le\ type\ de\ ressource\ \u00E0\ modifier\r\n\ @param\ nb\ le\ nouveau\ nombre\ de\ ressources\r\n
-comment5.params=res\ v
-comment5.target=void\ updateNbResource(Resource,\ int)
-comment5.text=\r\n\ Ajoute\ ou\ retire\ une\ quantit\u00E9\ de\ ressources\ d'un\ type\ donn\u00E9.\r\n\ Cette\ m\u00E9thode\ est\ la\ plus\ utilis\u00E9e\ pendant\ le\ jeu\ pour\ \:\r\n\ -\ Ajouter\ des\ jetons\ quand\ un\ joueur\ les\ prend\ (v\ >\ 0)\r\n\ -\ Retirer\ des\ jetons\ quand\ un\ joueur\ paie\ une\ carte\ (v\ <\ 0)\r\n\ \r\n\ CONTRAINTE\ IMPORTANTE\ \:\ Le\ nombre\ de\ ressources\ ne\ peut\ jamais\ \u00EAtre\ n\u00E9gatif.\r\n\ Si\ le\ calcul\ donne\ un\ r\u00E9sultat\ n\u00E9gatif,\ la\ quantit\u00E9\ est\ fix\u00E9e\ \u00E0\ 0.\r\n\ \r\n\ @param\ res\ le\ type\ de\ ressource\ \u00E0\ modifier\r\n\ @param\ v\ la\ quantit\u00E9\ \u00E0\ ajouter\ si\ v\ >\ 0,\ ou\ \u00E0\ retirer\ si\ v\ <\ 0\r\n
-comment6.params=
-comment6.target=java.util.List\ getAvailableResources()
-comment6.text=\r\n\ Retourne\ la\ liste\ des\ types\ de\ ressources\ disponibles\ (quantit\u00E9\ >\ 0).\r\n\ Cette\ m\u00E9thode\ est\ utilis\u00E9e\ pour\ afficher\ uniquement\ les\ ressources\ pertinentes\r\n\ et\ pour\ v\u00E9rifier\ quelles\ actions\ sont\ possibles\ (ex\ \:\ prendre\ 3\ jetons\ diff\u00E9rents).\r\n\ \r\n\ @return\ une\ liste\ contenant\ uniquement\ les\ types\ de\ ressources\ dont\ la\ quantit\u00E9\ est\ sup\u00E9rieure\ \u00E0\ 0\r\n
+comment3.params=diamond\ sapphire\ emerald\ onyx\ ruby\ gold
+comment3.target=Resources(int,\ int,\ int,\ int,\ int,\ int)
+comment3.text=\r\n\ Constructeur\ avec\ valeurs\ initiales\ incluant\ les\ jetons\ Or.\r\n\ Permet\ de\ cr\u00E9er\ directement\ un\ objet\ Resources\ avec\ des\ quantit\u00E9s\ sp\u00E9cifiques,\r\n\ y\ compris\ les\ jetons\ Or\ (utilis\u00E9\ principalement\ pour\ l'initialisation\ du\ plateau).\r\n\ \r\n\ @param\ diamond\ nombre\ de\ diamants\r\n\ @param\ sapphire\ nombre\ de\ saphirs\r\n\ @param\ emerald\ nombre\ d'\u00E9meraudes\r\n\ @param\ onyx\ nombre\ d'onyx\r\n\ @param\ ruby\ nombre\ de\ rubis\r\n\ @param\ gold\ nombre\ de\ jetons\ Or\r\n
+comment4.params=res
+comment4.target=int\ getNbResource(Resource)
+comment4.text=\r\n\ Retourne\ le\ nombre\ de\ ressources\ disponibles\ pour\ un\ type\ donn\u00E9.\r\n\ Utilise\ la\ m\u00E9thode\ ordinal()\ de\ l'\u00E9num\u00E9ration\ pour\ acc\u00E9der\ directement\r\n\ \u00E0\ l'index\ correspondant\ dans\ le\ tableau.\r\n\ \r\n\ @param\ res\ le\ type\ de\ ressource\ \u00E0\ consulter\r\n\ @return\ le\ nombre\ de\ ressources\ de\ ce\ type\ (toujours\ >\=\ 0)\r\n
+comment5.params=res\ nb
+comment5.target=void\ setNbResource(Resource,\ int)
+comment5.text=\r\n\ Modifie\ le\ nombre\ de\ ressources\ d'un\ type\ donn\u00E9\ (mutateur).\r\n\ Cette\ m\u00E9thode\ est\ principalement\ utilis\u00E9e\ lors\ de\ l'initialisation\r\n\ du\ plateau\ de\ jeu\ pour\ d\u00E9finir\ le\ nombre\ de\ jetons\ disponibles\r\n\ selon\ le\ nombre\ de\ joueurs.\r\n\ \r\n\ @param\ res\ le\ type\ de\ ressource\ \u00E0\ modifier\r\n\ @param\ nb\ le\ nouveau\ nombre\ de\ ressources\r\n
+comment6.params=res\ v
+comment6.target=void\ updateNbResource(Resource,\ int)
+comment6.text=\r\n\ Ajoute\ ou\ retire\ une\ quantit\u00E9\ de\ ressources\ d'un\ type\ donn\u00E9.\r\n\ Cette\ m\u00E9thode\ est\ la\ plus\ utilis\u00E9e\ pendant\ le\ jeu\ pour\ \:\r\n\ -\ Ajouter\ des\ jetons\ quand\ un\ joueur\ les\ prend\ (v\ >\ 0)\r\n\ -\ Retirer\ des\ jetons\ quand\ un\ joueur\ paie\ une\ carte\ (v\ <\ 0)\r\n\ \r\n\ CONTRAINTE\ IMPORTANTE\ \:\ Le\ nombre\ de\ ressources\ ne\ peut\ jamais\ \u00EAtre\ n\u00E9gatif.\r\n\ Si\ le\ calcul\ donne\ un\ r\u00E9sultat\ n\u00E9gatif,\ la\ quantit\u00E9\ est\ fix\u00E9e\ \u00E0\ 0.\r\n\ \r\n\ @param\ res\ le\ type\ de\ ressource\ \u00E0\ modifier\r\n\ @param\ v\ la\ quantit\u00E9\ \u00E0\ ajouter\ si\ v\ >\ 0,\ ou\ \u00E0\ retirer\ si\ v\ <\ 0\r\n
 comment7.params=
-comment7.target=java.lang.String\ toString()
-comment7.text=\r\n\ Retourne\ une\ repr\u00E9sentation\ textuelle\ des\ ressources.\r\n\ Affiche\ uniquement\ les\ ressources\ dont\ la\ quantit\u00E9\ est\ sup\u00E9rieure\ \u00E0\ 0,\r\n\ avec\ leur\ symbole\ compact\ (ex\ \:\ "3\u2666D\ 2\u2660S").\r\n\ Utile\ pour\ le\ d\u00E9bogage\ et\ les\ logs.\r\n\ \r\n\ @return\ une\ cha\u00EEne\ d\u00E9crivant\ les\ ressources\ disponibles\ avec\ leurs\ symboles\r\n
-numComments=8
+comment7.target=java.util.List\ getAvailableResources()
+comment7.text=\r\n\ Retourne\ la\ liste\ des\ types\ de\ ressources\ disponibles\ (quantit\u00E9\ >\ 0).\r\n\ Cette\ m\u00E9thode\ est\ utilis\u00E9e\ pour\ afficher\ uniquement\ les\ ressources\ pertinentes\r\n\ et\ pour\ v\u00E9rifier\ quelles\ actions\ sont\ possibles\ (ex\ \:\ prendre\ 3\ jetons\ diff\u00E9rents).\r\n\ \r\n\ @return\ une\ liste\ contenant\ uniquement\ les\ types\ de\ ressources\ dont\ la\ quantit\u00E9\ est\ sup\u00E9rieure\ \u00E0\ 0\r\n
+comment8.params=
+comment8.target=java.lang.String\ toString()
+comment8.text=\r\n\ Retourne\ une\ repr\u00E9sentation\ textuelle\ des\ ressources.\r\n\ Affiche\ uniquement\ les\ ressources\ dont\ la\ quantit\u00E9\ est\ sup\u00E9rieure\ \u00E0\ 0,\r\n\ avec\ leur\ symbole\ compact\ (ex\ \:\ "3\u2666D\ 2\u2660S").\r\n\ Utile\ pour\ le\ d\u00E9bogage\ et\ les\ logs.\r\n\ \r\n\ @return\ une\ cha\u00EEne\ d\u00E9crivant\ les\ ressources\ disponibles\ avec\ leurs\ symboles\r\n
+numComments=9

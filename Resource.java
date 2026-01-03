@@ -1,32 +1,37 @@
 /**
- * Énumération représentant les cinq types de ressources dans le jeu Splendor.
- *
+ * Énumération représentant les six types de ressources dans le jeu Splendor.
+ * 
  * Chaque type de ressource correspond à une pierre précieuse utilisée comme monnaie
  * dans le jeu. Les joueurs collectent ces ressources sous forme de jetons pour acheter
  * des cartes de développement. Chaque ressource possède un symbole Unicode unique
  * pour l'affichage dans le terminal.
  * 
- * Les cinq types de ressources sont :
- *
- *   DIAMOND (Diamant) - symbole ♦D
- *   SAPPHIRE (Saphir) - symbole ♠S
- *   EMERALD (Émeraude) - symbole ♣E
- *   RUBY (Rubis) - symbole ♥R
- *   ONYX (Onyx) - symbole ●O
+ * Les six types de ressources sont :
+ * 
+ * DIAMOND (Diamant) - symbole ♦D
+ * SAPPHIRE (Saphir) - symbole ♠S
+ * EMERALD (Émeraude) - symbole ♣E
+ * RUBY (Rubis) - symbole ♥R
+ * ONYX (Onyx) - symbole ●O
+ * GOLD (Or/Joker) - symbole  ◉G
  * 
  * L'ordre des valeurs dans cette énumération est important car il correspond à l'ordre
  * utilisé dans la classe Resources pour l'indexation du tableau interne (via la méthode
  * ordinal()).
  * 
- * @author Fourni par l'enseignant
- * @version 01/01/2026
+ * ATTENTION : GOLD est toujours en dernière position car c'est une ressource spéciale
+ * qui ne peut pas être piochée normalement (seulement obtenue en réservant des cartes).
+ * 
+ * @author Fourni par l'enseignant + FONFREIDE Quentin (ajout GOLD)
+ * @version 02/01/2026
  */
 public enum Resource {
     DIAMOND,
     SAPPHIRE,
     EMERALD,
     ONYX,
-    RUBY;
+    RUBY,
+    GOLD; 
 
     /**
      * Retourne une représentation textuelle complète de la ressource.
@@ -40,15 +45,17 @@ public enum Resource {
     public String toString(){
         switch(this){
             case EMERALD:
-                return "EMERAUDE \u2663"; // EMERAUDE ♣
+                return "EMERAUDE \u2663";  // EMERAUDE ♣
             case DIAMOND:
-                return "DIAMANT \u2666"; // DIAMANT ♦
+                return "DIAMANT \u2666";   // DIAMANT ♦
             case SAPPHIRE:
-                return "SAPHIR \u2660"; // SAPHIR ♠
+                return "SAPHIR \u2660";    // SAPHIR ♠
             case ONYX:
-                return "ONYX \u25CF"; // ONYX ●
+                return "ONYX \u25CF";      // ONYX ●
             case RUBY:
-                return "RUBIS \u2665"; // RUBIS ♥
+                return "RUBIS \u2665";     // RUBIS ♥
+            case GOLD:
+                return "GOLD \u25C9";        // OR ◉
             default:
                 return "";
         }
@@ -62,21 +69,22 @@ public enum Resource {
      * pour diamant ou "♠S" pour saphir. Cette représentation compacte est
      * utilisée pour l'affichage des cartes et du plateau de jeu dans le terminal.
      * 
-     * 
      * @return une chaîne contenant le symbole et l'initiale de la ressource
      */
     public String toSymbol(){
         switch(this){
             case EMERALD:
-                return "\u2663E"; // ♣E
+                return "\u2663E";  // ♣E
             case DIAMOND:
-                return "\u2666D"; // ♦D
+                return "\u2666D";  // ♦D
             case SAPPHIRE:
-                return "\u2660S"; // ♠S
+                return "\u2660S";  // ♠S
             case ONYX:
-                return "\u25CFO"; // ●O
+                return "\u25CFO";  // ●O
             case RUBY:
-                return "\u2665R"; // ♥R
+                return "\u2665R";  // ♥R
+            case GOLD:
+                return "\u25C9G";  // ◉G
             default:
                 return "";
         }

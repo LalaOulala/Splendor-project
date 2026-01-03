@@ -41,13 +41,20 @@ public class HumanPlayer extends Player {
     /**
      * Demande au joueur humain de choisir une action pour son tour.
      * 
-     * Affiche un menu avec 4 options et boucle jusqu'à ce qu'une action valide
+     * Affiche un menu avec 5 options et boucle jusqu'à ce qu'une action valide
      * soit choisie. Gère les erreurs de saisie (lettres au lieu de nombres)
      * et les choix hors limites.
      * 
      * Pour chaque type d'action, appelle une méthode privée ask...() qui gère
      * les détails de l'interaction spécifique. Si l'utilisateur annule (retour 0),
      * la méthode ask...() retourne null et le menu principal est réaffiché.
+     * 
+     * Menu des actions :
+     * 1. Prendre 2 jetons identiques
+     * 2. Prendre 3 jetons différents
+     * 3. Acheter une carte (plateau ou réservations)
+     * 4. Réserver une carte (max 3)
+     * 5. Passer son tour
      * 
      * @param board le plateau de jeu (pour consulter les cartes et jetons disponibles)
      * @return l'action choisie et validée par le joueur
@@ -62,12 +69,13 @@ public class HumanPlayer extends Player {
             Game.display.out.println("1. Prendre 2 jetons identiques");
             Game.display.out.println("2. Prendre 3 jetons différents");
             Game.display.out.println("3. Acheter une carte");
-            Game.display.out.println("4. Passer votre tour");
-            Game.display.out.print("Votre choix (1-4) : ");
+            Game.display.out.println("4. Réserver une carte (" + getNbReservedCards() + "/3)");  // ← NOUVEAU
+            Game.display.out.println("5. Passer votre tour");  // ← MODIFIÉ : 5 au lieu de 4
+            Game.display.out.print("Votre choix (1-5) : ");  // ← MODIFIÉ : 1-5 au lieu de 1-4
             
             try {
                 int choice = scanner.nextInt();
-                scanner.nextLine();  // Consommer le retour à la ligne
+                scanner.nextLine(); // Consommer le retour à la ligne
                 Game.display.out.print(choice);
                 Game.display.out.println();
                 
@@ -78,17 +86,20 @@ public class HumanPlayer extends Player {
                         return askPickDiffTokens(scanner, board);
                     case 3:
                         return askBuyCard(scanner, board);
-                    case 4:
+                    case 4:  // ← NOUVEAU
+                        return askReserveCard(scanner, board);
+                    case 5:  // ← MODIFIÉ : Passer passe de 4 à 5
                         return new PassAction();
                     default:
-                        Game.display.out.println("Choix invalide ! Choisissez entre 1 et 4.");
+                        Game.display.out.println("Choix invalide ! Choisissez entre 1 et 5.");  // ← MODIFIÉ
                 }
             } catch (Exception e) {
                 Game.display.out.println("Erreur de saisie ! Veuillez entrer un nombre.");
-                scanner.nextLine();  // Vider le buffer
+                scanner.nextLine(); // Vider le buffer
             }
         }
     }
+
     
     /**
      * Gère l'interaction pour prendre 2 jetons identiques.
@@ -349,171 +360,608 @@ public class HumanPlayer extends Player {
         return new PickDiffTokensAction(chosen);
     }
 
-
     
     /**
      * Gère l'interaction pour acheter une carte.
      * 
-     * Demande les coordonnées de la carte (niveau 1-3 et colonne 1-4), demande
-     * confirmation de l'action, puis vérifie qu'une carte existe à cette position
-     * et que le joueur a suffisamment de ressources (jetons + bonus) pour l'acheter.
+     * Le joueur peut acheter :
+     * - Une carte visible du plateau (en donnant niveau + colonne)
+     * - Une de ses cartes réservées (en choisissant dans la liste)
      * 
-     * Processus détaillé :
-     * 1. Demande le niveau (1-3) - 0 pour annuler
-     * 2. Demande la colonne (1-4) - 0 pour annuler
-     * 3. Demande confirmation finale (O/N)
-     * 4. Vérifie que les coordonnées sont valides
-     * 5. Récupère la carte à cette position
-     * 6. Vérifie que le joueur peut acheter la carte avec canBuyCard()
+     * Affiche les coordonnées de la carte, demande confirmation, vérifie que
+     * le joueur a assez de ressources (jetons + bonus + jetons Or), et crée l'action.
      * 
-     * En cas d'échec d'achat, affiche un détail complet :
-     * - Les ressources du joueur (jetons + bonus par type)
-     * - Le coût requis de la carte (par type de ressource)
-     * Ce qui permet au joueur de comprendre exactement ce qui lui manque.
+     * Les jetons Or sont utilisés automatiquement pour combler les manques de ressources.
+     * Le joueur n'a pas besoin de choisir : le système calcule et applique automatiquement.
      * 
-     * Gestion des erreurs :
-     * - Coordonnées invalides : propose de réessayer
-     * - Pas de carte à cette position : propose de réessayer
-     * - Ressources insuffisantes : affiche le détail et propose de choisir une autre carte
-     * 
-     * L'utilisateur peut taper 0 à tout moment (niveau ou colonne) pour annuler
-     * et retourner au menu principal.
+     * En cas d'erreur (carte inexistante, ressources insuffisantes), propose de réessayer
+     * ou de retourner au menu principal.
      * 
      * @param scanner le scanner pour lire les entrées utilisateur
-     * @param board le plateau de jeu pour récupérer la carte
-     * @return l'action BuyCardAction créée avec la carte choisie, ou null pour retour au menu
+     * @param board le plateau de jeu pour vérifier les disponibilités
+     * @return l'action BuyCardAction créée, ou null pour retour au menu
      */
     private Action askBuyCard(Scanner scanner, Board board) {
-        Game.display.out.println("\n--- Achat de carte (tapez 0 pour annuler) ---");
-        
-        Game.display.out.print("Niveau de la carte (1-3 ou 0 pour retour) : ");
-        
-        String tierInput = scanner.nextLine();
-        Game.display.out.print(tierInput);
-        Game.display.out.println();
-        
-        // Retour au menu
-        if (tierInput.equals("0")) {
-            return null;
-        }
-        
-        int tier;
-        try {
-            tier = Integer.parseInt(tierInput);
-        } catch (NumberFormatException e) {
-            Game.display.out.println("Entrée invalide !");
-            return askBuyCard(scanner, board);
-        }
-        
-        Game.display.out.print("Colonne (1-4 ou 0 pour annuler) : ");
-        
-        String colInput = scanner.nextLine();
-        Game.display.out.print(colInput);
-        Game.display.out.println();
-        
-        // Confirmation finale
-        String finalConfirm = "";
-        while (finalConfirm.isEmpty()) {
-            Game.display.out.print("\nConfirmer cette action ? (O/N) : ");
-            
-            finalConfirm = scanner.nextLine().trim().toUpperCase();
-        }
-        Game.display.out.print(finalConfirm);
-        Game.display.out.println();
-        if (!finalConfirm.equals("O")) {
-            Game.display.out.println("→ Action annulée, retour au menu principal\n");
-            return null;
-        }
-        
-        // Retour au menu
-        if (colInput.equals("0")) {
-            return null;
-        }
-        
-        int col;
-        try {
-            col = Integer.parseInt(colInput);
-        } catch (NumberFormatException e) {
-            Game.display.out.println("Entrée invalide !");
-            return askBuyCard(scanner, board);
-        }
-        
-        if (tier < 1 || tier > 3 || col < 1 || col > 4) {
-            Game.display.out.println("Coordonnées invalides !");
-            String retry = "";
-            while (retry.isEmpty()) {
-                Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
-                
-                retry = scanner.nextLine().trim().toUpperCase();
-            }
-
-            Game.display.out.print(retry);
+        if (this.getNbReservedCards() > 0){
+            Game.display.out.println("\n=== ACHAT DE CARTE ===");
             Game.display.out.println();
-
-            if (retry.equals("O")) {
+            // ========== NOUVEAU : Demander la source de la carte ==========
+            Game.display.out.print("Acheter sur le Plateau (P) ou dans les Réservations (R) ? (ou 0 pour annuler) : ");
+            String sourceChoice = scanner.nextLine().trim().toUpperCase();
+            Game.display.out.print(sourceChoice);
+            Game.display.out.println();
+            
+            if (sourceChoice.equals("0")) {
+                Game.display.out.println("→ Retour au menu principal\n");
+                return null;
+            }
+            
+            // ========== ACHETER UNE CARTE RÉSERVÉE ==========
+            if (sourceChoice.equals("R")) {
+                Game.display.out.println("\n→ Vos cartes réservées :");
+                Game.display.out.println();
+                ArrayList<DevCard> reserved = getReservedCards();
+                for (int i = 0; i < reserved.size(); i++) {
+                    Game.display.out.println("    " + (i + 1) + ". " + "    ");
+                }
+                for (int i = 0; i < reserved.size(); i++) {
+                    Game.display.out.println(reserved.get(i).toString());
+                }
+                Game.display.out.println();
+                Game.display.out.print("\nQuelle carte voulez-vous acheter ? (1-" + reserved.size() + " ou 0 pour annuler) : ");
+                String cardChoice = scanner.nextLine().trim();
+                Game.display.out.print(cardChoice);
+                Game.display.out.println();
+                
+                if (cardChoice.equals("0")) {
+                    return null;
+                }
+                
+                int cardIndex;
+                try {
+                    cardIndex = Integer.parseInt(cardChoice) - 1;  // -1 pour convertir en index 0-based
+                } catch (NumberFormatException e) {
+                    Game.display.out.println("Entrée invalide !");
+                    return askBuyCard(scanner, board);
+                }
+                
+                if (cardIndex < 0 || cardIndex > reserved.size()-1) {
+                    Game.display.out.println("❌ Numéro de carte invalide !");
+                    return askBuyCard(scanner, board);
+                }
+                
+                DevCard card = reserved.get(cardIndex);
+                
+                // Vérifier si le joueur peut acheter cette carte
+                if (!canBuyCard(card)) {
+                    Game.display.out.println("❌ Vous n'avez pas assez de ressources pour acheter cette carte !");
+                    Game.display.out.println();
+                    Game.display.out.println("Carte : " + card.toString());
+                    Game.display.out.println();
+                    Game.display.out.print("\nVoulez-vous choisir une autre carte ? (O/N) : ");
+                    String retry = scanner.nextLine().trim().toUpperCase();
+                    Game.display.out.print(retry);
+                    Game.display.out.println();
+                    
+                    if (retry.equals("O")) {
+                        return askBuyCard(scanner, board);
+                    } else {
+                        return null;
+                    }
+                }
+                
+                // Confirmation
+                String finalConfirm = "";
+                while (finalConfirm.isEmpty()) {
+                    Game.display.out.print("\nConfirmer cet achat ? (O/N) : ");
+                    finalConfirm = scanner.nextLine().trim().toUpperCase();
+                }
+                Game.display.out.print(finalConfirm);
+                Game.display.out.println();
+                
+                if (!finalConfirm.equals("O")) {
+                    Game.display.out.println("→ Action annulée, retour au menu principal\n");
+                    return null;
+                }
+                
+                Game.display.out.println("✓ Action confirmée !\n");
+                return new BuyCardAction(card, true);  // true = depuis réservations
+            }
+            
+            // ========== ACHETER UNE CARTE DU PLATEAU ==========
+            else if (sourceChoice.equals("P")) {
+                Game.display.out.println("\n→ Acheter une carte du PLATEAU");
+                Game.display.out.print("Niveau de la carte (1-3 ou 0 pour retour) : ");
+                String tierInput = scanner.nextLine();
+                Game.display.out.print(tierInput);
+                Game.display.out.println();
+                
+                if (tierInput.equals("0")) {
+                    return null;
+                }
+                
+                int tier;
+                try {
+                    tier = Integer.parseInt(tierInput);
+                } catch (NumberFormatException e) {
+                    Game.display.out.println("Entrée invalide !");
+                    return askBuyCard(scanner, board);
+                }
+                
+                Game.display.out.print("Colonne de la carte (1-4 ou 0 pour retour) : ");
+                String colInput = scanner.nextLine();
+                Game.display.out.print(colInput);
+                Game.display.out.println();
+                
+                // Confirmation finale
+                String finalConfirm = "";
+                while (finalConfirm.isEmpty()) {
+                    Game.display.out.print("\nConfirmer cette action ? (O/N) : ");
+                    finalConfirm = scanner.nextLine().trim().toUpperCase();
+                }
+                
+                Game.display.out.print(finalConfirm);
+                Game.display.out.println();
+                
+                if (!finalConfirm.equals("O")) {
+                    Game.display.out.println("→ Action annulée, retour au menu principal\n");
+                    return null;
+                }
+                
+                // Retour au menu
+                if (colInput.equals("0")) {
+                    return null;
+                }
+                
+                int col;
+                try {
+                    col = Integer.parseInt(colInput);
+                } catch (NumberFormatException e) {
+                    Game.display.out.println("Entrée invalide !");
+                    return askBuyCard(scanner, board);
+                }
+                
+                if (tier < 1 || tier > 3 || col < 1 || col > 4) {
+                    Game.display.out.println("Coordonnées invalides !");
+                    String retry = "";
+                    while (retry.isEmpty()) {
+                        Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
+                        retry = scanner.nextLine().trim().toUpperCase();
+                    }
+                    
+                    Game.display.out.print(retry);
+                    Game.display.out.println();
+                    
+                    if (retry.equals("O")) {
+                        return askBuyCard(scanner, board);
+                    } else {
+                        return null;
+                    }
+                }
+                
+                DevCard card = board.getCard(tier, col - 1);
+                
+                if (card == null) {
+                    Game.display.out.println("Il n'y a pas de carte à cette position !");
+                    String retry = "";
+                    while (retry.isEmpty()) {
+                        Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
+                        retry = scanner.nextLine().trim().toUpperCase();
+                    }
+                    
+                    Game.display.out.print(retry);
+                    Game.display.out.println();
+                    
+                    if (retry.equals("O")) {
+                        return askBuyCard(scanner, board);
+                    } else {
+                        return null;
+                    }
+                }
+                
+                if (!canBuyCard(card)) {
+                    Game.display.out.println("Vous n'avez pas assez de ressources pour acheter cette carte !");
+                    Game.display.out.println();
+                    Game.display.out.println("Carte : " + card.toString());
+                    Game.display.out.println();
+                    Game.display.out.print("\nVoulez-vous choisir une autre carte ? (O/N) : ");
+                    String retry = scanner.nextLine().trim().toUpperCase();
+                    Game.display.out.print(retry);
+                    Game.display.out.println();
+                    
+                    if (retry.equals("O")) {
+                        return askBuyCard(scanner, board);
+                    } else {
+                        return null; // Retour au menu
+                    }
+                }
+                
+                Game.display.out.println("✓ Action confirmée !\n");
+                return new BuyCardAction(card, false);  // false = depuis plateau
+            }
+            
+            // ========== CHOIX INVALIDE ==========
+            else {
+                Game.display.out.println("❌ Choix invalide ! Tapez P pour Plateau ou R pour Réservations.");
                 return askBuyCard(scanner, board);
-            } else {
+            }
+        }else{
+            Game.display.out.println("\n--- Achat de carte (tapez 0 pour annuler) ---");
+        
+            Game.display.out.print("Niveau de la carte (1-3 ou 0 pour retour) : ");
+            
+            String tierInput = scanner.nextLine();
+            Game.display.out.print(tierInput);
+            Game.display.out.println();
+            
+            // Retour au menu
+            if (tierInput.equals("0")) {
+                return null;
+            }
+            
+            int tier;
+            try {
+                tier = Integer.parseInt(tierInput);
+            } catch (NumberFormatException e) {
+                Game.display.out.println("Entrée invalide !");
+                return askBuyCard(scanner, board);
+            }
+            
+            Game.display.out.print("Colonne (1-4 ou 0 pour annuler) : ");
+            
+            String colInput = scanner.nextLine();
+            Game.display.out.print(colInput);
+            Game.display.out.println();
+            
+            // Confirmation finale
+            String finalConfirm = "";
+            while (finalConfirm.isEmpty()) {
+                Game.display.out.print("\nConfirmer cette action ? (O/N) : ");
+                
+                finalConfirm = scanner.nextLine().trim().toUpperCase();
+            }
+            Game.display.out.print(finalConfirm);
+            Game.display.out.println();
+            if (!finalConfirm.equals("O")) {
+                Game.display.out.println("→ Action annulée, retour au menu principal\n");
+                return null;
+            }
+            
+            // Retour au menu
+            if (colInput.equals("0")) {
+                return null;
+            }
+            
+            int col;
+            try {
+                col = Integer.parseInt(colInput);
+            } catch (NumberFormatException e) {
+                Game.display.out.println("Entrée invalide !");
+                return askBuyCard(scanner, board);
+            }
+            
+            if (tier < 1 || tier > 3 || col < 1 || col > 4) {
+                Game.display.out.println("Coordonnées invalides !");
+                String retry = "";
+                while (retry.isEmpty()) {
+                    Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
+                    
+                    retry = scanner.nextLine().trim().toUpperCase();
+                }
+    
+                Game.display.out.print(retry);
+                Game.display.out.println();
+    
+                if (retry.equals("O")) {
+                    return askBuyCard(scanner, board);
+                } else {
+                    return null;
+                }
+            }
+            
+            DevCard card = board.getCard(tier, col - 1);
+            
+            if (card == null) {
+                Game.display.out.println("Il n'y a pas de carte à cette position !");
+                String retry = "";
+                while (retry.isEmpty()) {
+                    Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
+                    
+                    retry = scanner.nextLine().trim().toUpperCase();
+                }
+    
+                Game.display.out.print(retry);
+                Game.display.out.println();
+    
+                if (retry.equals("O")) {
+                    return askBuyCard(scanner, board);
+                } else {
+                    return null;
+                }
+            }
+            
+            if (!canBuyCard(card)) {
+                Game.display.out.println("Vous n'avez pas assez de ressources pour acheter cette carte !");
+                Game.display.out.println();
+                Game.display.out.println("Carte : " + card.toString());
+                Game.display.out.println();
+                Game.display.out.print("\nVoulez-vous choisir une autre carte ? (O/N) : ");
+                String retry = scanner.nextLine().trim().toUpperCase();
+                Game.display.out.print(retry);
+                Game.display.out.println();
+                if (retry.equals("O")) {
+                    return askBuyCard(scanner, board);
+                } else {
+                    return null;  // Retour au menu
+                }
+            }
+            
+            Game.display.out.println("✓ Action confirmée !\n");
+            return new BuyCardAction(card);
+        }
+    }
+
+    
+    
+    /**
+     * Gère l'interaction pour réserver une carte.
+     * 
+     * Le joueur peut réserver :
+     * - Une carte visible (en donnant niveau + colonne)
+     * - Une carte face cachée du dessus d'une pile (en donnant seulement le niveau)
+     * 
+     * Avantages de la réservation :
+     * - Empêcher un adversaire de prendre une carte convoitée
+     * - Obtenir un jeton Or (joker) si disponible sur le plateau
+     * - Préparer un futur achat sans dépenser de ressources immédiatement
+     * 
+     * Limitations :
+     * - Maximum 3 cartes réservées par joueur
+     * - Les cartes réservées comptent dans la limite mais peuvent être achetées plus tard
+     * 
+     * Processus :
+     * 1. Vérifier que le joueur peut encore réserver (< 3 cartes réservées)
+     * 2. Demander : carte visible (V) ou face cachée (C) ?
+     * 3. Si visible : demander niveau et colonne, vérifier que la carte existe
+     * 4. Si cachée : demander niveau, vérifier que la pile n'est pas vide
+     * 5. Afficher récapitulatif et demander confirmation
+     * 6. Créer et retourner l'action
+     * 
+     * @param scanner le scanner pour lire les entrées utilisateur
+     * @param board le plateau de jeu pour vérifier les disponibilités
+     * @return l'action ReserveCardAction créée, ou null pour retour au menu
+     */
+    private Action askReserveCard(Scanner scanner, Board board) {
+        Game.display.out.println("\n=== RÉSERVER UNE CARTE ===");
+        
+        // Vérifier la limite de réservations
+        if (!canReserve()) {
+            Game.display.out.println("❌ Vous avez déjà 3 cartes réservées (maximum atteint) !");
+            Game.display.out.println("→ Retour au menu principal\n");
+            return null;
+        }
+        
+        // Afficher les jetons Or disponibles
+        int goldAvailable = board.getNbResource(Resource.GOLD);
+        Game.display.out.println("Jetons Or disponibles sur le plateau : " + goldAvailable);
+        if (goldAvailable > 0) {
+            Game.display.out.println();
+            Game.display.out.println("→ Vous recevrez 1 jeton Or en réservant une carte");
+        } else {
+            Game.display.out.println("⚠️ Aucun jeton Or disponible");
+            Game.display.out.println();
+            Game.display.out.print("Souhaitez-vous continuer ? (O/N) : ");
+            String choice = scanner.nextLine().trim().toUpperCase();
+            Game.display.out.print(choice);
+            Game.display.out.println();
+            if (!choice.equals("O")){
+                Game.display.out.println("→ Retour au menu principal\n");
                 return null;
             }
         }
         
-        DevCard card = board.getCard(tier, col - 1);
+        Game.display.out.println("\nVous avez actuellement " + getNbReservedCards() + "/3 cartes réservées");
+        Game.display.out.println();
         
-        if (card == null) {
-            Game.display.out.println("Il n'y a pas de carte à cette position !");
-            String retry = "";
-            while (retry.isEmpty()) {
-                Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
-                
-                retry = scanner.nextLine().trim().toUpperCase();
-            }
-
-            Game.display.out.print(retry);
+        // Demander le type de réservation
+        Game.display.out.print("Réserver une carte Visible (V) ou face Cachée (C) ? (ou 0 pour annuler) : ");
+        String typeChoice = scanner.nextLine().trim().toUpperCase();
+        Game.display.out.print(typeChoice);
+        Game.display.out.println();
+        
+        if (typeChoice.equals("0")) {
+            Game.display.out.println("→ Retour au menu principal\n");
+            return null;
+        }
+        
+        // ========== RÉSERVATION D'UNE CARTE VISIBLE ==========
+        if (typeChoice.equals("V")) {
+            Game.display.out.println("\n→ Réservation d'une carte VISIBLE");
+            Game.display.out.print("Niveau de la carte (1-3) : ");
+            String tierInput = scanner.nextLine();
+            Game.display.out.print(tierInput);
             Game.display.out.println();
-
-            if (retry.equals("O")) {
-                return askBuyCard(scanner, board);
-            } else {
+            
+            if (tierInput.equals("0")) {
                 return null;
             }
-        }
-        
-        if (!canBuyCard(card)) {
-            Game.display.out.println("Vous n'avez pas assez de ressources pour acheter cette carte !");
-            Game.display.out.println("Carte : " + card.toString());
             
-            Game.display.out.println("\n--- Détails ---");
-            Game.display.out.println("Vos ressources :");
-            for (Resource res : Resource.values()) {
-                int owned = getNbResource(res);
-                int bonus = getResFromCards(res);
-                if (owned > 0 || bonus > 0) {
-                    Game.display.out.println("  " + res.toSymbol() + " : " + owned + " jetons + " + bonus + " bonus = " + (owned + bonus));
-                }
+            int tier;
+            try {
+                tier = Integer.parseInt(tierInput);
+            } catch (NumberFormatException e) {
+                Game.display.out.println("Entrée invalide !");
+                return askReserveCard(scanner, board);
             }
             
-            Game.display.out.println("\nCoût de la carte :");
-            Resources cost = card.getCost();
-            for (Resource res : Resource.values()) {
-                int required = cost.getNbResource(res);
-                if (required > 0) {
-                    Game.display.out.println("  " + res.toSymbol() + " : " + required + " requis");
-                }
-            }
-            
-            Game.display.out.print("\nVoulez-vous choisir une autre carte ? (O/N) : ");
-            String retry = scanner.nextLine().trim().toUpperCase();
-            Game.display.out.print(retry);
+            Game.display.out.print("Colonne de la carte (1-4) : ");
+            String colInput = scanner.nextLine();
+            Game.display.out.print(colInput);
             Game.display.out.println();
-            if (retry.equals("O")) {
-                return askBuyCard(scanner, board);
-            } else {
-                return null;  // Retour au menu
+            
+            if (colInput.equals("0")) {
+                return null;
             }
+            
+            int col;
+            try {
+                col = Integer.parseInt(colInput);
+            } catch (NumberFormatException e) {
+                Game.display.out.println("Entrée invalide !");
+                return askReserveCard(scanner, board);
+            }
+            
+            // Validation des coordonnées
+            if (tier < 1 || tier > 3 || col < 1 || col > 4) {
+                Game.display.out.println("❌ Coordonnées invalides !");
+                String retry = "";
+                while (retry.isEmpty()) {
+                    Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
+                    retry = scanner.nextLine().trim().toUpperCase();
+                }
+                Game.display.out.print(retry);
+                Game.display.out.println();
+                
+                if (retry.equals("O")) {
+                    return askReserveCard(scanner, board);
+                } else {
+                    return null;
+                }
+            }
+            
+            // Récupérer la carte
+            DevCard card = board.getCard(tier, col - 1);
+            
+            if (card == null) {
+                Game.display.out.println("❌ Il n'y a pas de carte disponible à cette position !");
+                String retry = "";
+                while (retry.isEmpty()) {
+                    Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
+                    retry = scanner.nextLine().trim().toUpperCase();
+                }
+                Game.display.out.print(retry);
+                Game.display.out.println();
+                
+                if (retry.equals("O")) {
+                    return askReserveCard(scanner, board);
+                } else {
+                    return null;
+                }
+            }
+            
+            // Récapitulatif
+            Game.display.out.println("\n✓ Récapitulatif - Vous réservez : " + card.toString());
+            if (goldAvailable > 0) {
+                Game.display.out.println("  → Vous recevrez 1 jeton Or");
+            }
+            
+            // Confirmation finale
+            String finalConfirm = "";
+            while (finalConfirm.isEmpty()) {
+                Game.display.out.print("\nConfirmer cette action ? (O/N) : ");
+                finalConfirm = scanner.nextLine().trim().toUpperCase();
+            }
+            Game.display.out.print(finalConfirm);
+            Game.display.out.println();
+            
+            if (!finalConfirm.equals("O")) {
+                Game.display.out.println("→ Action annulée, retour au menu principal\n");
+                return null;
+            }
+            
+            Game.display.out.println("✓ Action confirmée !\n");
+            return new ReserveCardAction(card, false);  // false = carte visible
         }
         
-        Game.display.out.println("✓ Action confirmée !\n");
-        return new BuyCardAction(card);
+        // ========== RÉSERVATION D'UNE CARTE FACE CACHÉE ==========
+        else if (typeChoice.equals("C")) {
+            Game.display.out.println("\n→ Réservation d'une carte FACE CACHÉE");
+            Game.display.out.print("Niveau de la pile (1-3) : ");
+            String tierInput = scanner.nextLine();
+            Game.display.out.print(tierInput);
+            Game.display.out.println();
+            
+            if (tierInput.equals("0")) {
+                return null;
+            }
+            
+            int tier;
+            try {
+                tier = Integer.parseInt(tierInput);
+            } catch (NumberFormatException e) {
+                Game.display.out.println("Entrée invalide !");
+                return askReserveCard(scanner, board);
+            }
+            
+            // Validation du niveau
+            if (tier < 1 || tier > 3) {
+                Game.display.out.println("❌ Niveau invalide ! Choisissez entre 1 et 3.");
+                String retry = "";
+                while (retry.isEmpty()) {
+                    Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
+                    retry = scanner.nextLine().trim().toUpperCase();
+                }
+                Game.display.out.print(retry);
+                Game.display.out.println();
+                
+                if (retry.equals("O")) {
+                    return askReserveCard(scanner, board);
+                } else {
+                    return null;
+                }
+            }
+            
+            // Vérifier que la pile n'est pas vide
+            if (!board.canDrawPile(tier)) {
+                Game.display.out.println("❌ La pile de niveau " + tier + " est vide !");
+                String retry = "";
+                while (retry.isEmpty()) {
+                    Game.display.out.print("Voulez-vous réessayer ? (O/N) : ");
+                    retry = scanner.nextLine().trim().toUpperCase();
+                }
+                Game.display.out.print(retry);
+                Game.display.out.println();
+                
+                if (retry.equals("O")) {
+                    return askReserveCard(scanner, board);
+                } else {
+                    return null;
+                }
+            }
+            
+            // Piocher la carte face cachée
+            DevCard card = board.drawCard(tier);
+            
+            // Récapitulatif
+            Game.display.out.println("\n✓ Récapitulatif - Vous réservez une carte FACE CACHÉE de niveau " + tier);
+            Game.display.out.println("  Carte piochée : " + card.toString());
+            if (goldAvailable > 0) {
+                Game.display.out.println("  → Vous recevrez 1 jeton Or");
+            }
+            
+            // Confirmation finale
+            String finalConfirm = "";
+            while (finalConfirm.isEmpty()) {
+                Game.display.out.print("\nConfirmer cette action ? (O/N) : ");
+                finalConfirm = scanner.nextLine().trim().toUpperCase();
+            }
+            Game.display.out.print(finalConfirm);
+            Game.display.out.println();
+            
+            if (!finalConfirm.equals("O")) {
+                Game.display.out.println("→ Action annulée, retour au menu principal\n");
+                return null;
+            }
+            
+            Game.display.out.println("✓ Action confirmée !\n");
+            return new ReserveCardAction(card, true);  // true = carte face cachée
+        }
+        
+        // ========== CHOIX INVALIDE ==========
+        else {
+            Game.display.out.println("❌ Choix invalide ! Tapez V pour Visible ou C pour Cachée.");
+            return askReserveCard(scanner, board);
+        }
     }
 
     

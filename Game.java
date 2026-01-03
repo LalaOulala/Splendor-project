@@ -367,12 +367,30 @@ public class Game {
             String[] pArr = players.get(i).toStringArray();
             if(i==currentPlayer){
                 pArr[0] = "\u27A4 " + pArr[0];
+                pArr[0] = pArr[0].substring(0,pArr[0].length()-4) + "\u250A";
             }
             playerDisplay = Display.concatStringArray(playerDisplay, pArr, true);
-            playerDisplay = Display.concatStringArray(playerDisplay, Display.emptyStringArray(1, COLS-54, "\u2509"), true);
+            String separationLine = "\u2509".repeat(COLS-54) + "\u250A";
+            String[] separationArray = {separationLine};
+            playerDisplay = Display.concatStringArray(playerDisplay, separationArray, true);
         }
         String[] mainDisplay = Display.concatStringArray(boardDisplay, playerDisplay, false);
-
+        
+        if (mainDisplay.length > 2) {
+            String line = mainDisplay[2];
+            mainDisplay[2] = line.substring(0, line.length() - ((board.getVisibleNobles().size())+1)) + "\u250A";
+        }
+        
+        int horizontal = 89;
+        if (players.size() == 3){
+            horizontal = 88;
+        } else if (players.size() == 4){
+            horizontal = 98;
+        }
+        mainDisplay = Display.concatStringArray(Display.emptyStringArray(1, horizontal, "\u2509"), mainDisplay, true);
+        mainDisplay = Display.concatStringArray(Display.emptyStringArray(37, 1, " \u250A"), mainDisplay, false);
+        mainDisplay[0] = mainDisplay[0].substring(0, mainDisplay[0].length() - 1) + "\u250A";
+        
         display.outBoard.clean();
         display.outBoard.println(String.join("\n", mainDisplay));
     }

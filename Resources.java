@@ -10,30 +10,28 @@ import java.util.List;
  * - Les jetons possédés par chaque joueur
  * 
  * Implémentation : utilise un tableau d'entiers avec un ordre fixe correspondant
- * à l'énumération Resource (DIAMOND, SAPPHIRE, EMERALD, ONYX, RUBY).
+ * à l'énumération Resource (DIAMOND, SAPPHIRE, EMERALD, ONYX, RUBY, GOLD).
  * L'accès aux ressources se fait via la méthode ordinal() de l'énumération.
  * 
  * @author FONFREIDE Quentin
- * @version 01/01/2026
+ * @version 02/01/2026
  */
 public class Resources {
-    
     /**
      * Tableau stockant les quantités de chaque type de ressource.
-     * Index 0 = DIAMOND, 1 = SAPPHIRE, 2 = EMERALD, 3 = ONYX, 4 = RUBY.
+     * Index 0 = DIAMOND, 1 = SAPPHIRE, 2 = EMERALD, 3 = ONYX, 4 = RUBY, 5 = GOLD.
      * Cet ordre correspond exactement à l'ordre de l'énumération Resource.
      */
     private int[] resources;
-    
-    
+
     /**
      * Constructeur par défaut.
      * Initialise toutes les ressources à 0.
      */
     public Resources() {
-        resources = new int[5];
+        resources = new int[6];
     }
-    
+
     /**
      * Constructeur avec valeurs initiales.
      * Permet de créer directement un objet Resources avec des quantités spécifiques.
@@ -45,12 +43,36 @@ public class Resources {
      * @param ruby nombre de rubis
      */
     public Resources(int diamond, int sapphire, int emerald, int onyx, int ruby) {
-        resources = new int[5];
+        resources = new int[6];
         resources[0] = diamond;
         resources[1] = sapphire;
         resources[2] = emerald;
         resources[3] = onyx;
         resources[4] = ruby;
+        resources[5] = 0; 
+    }
+    
+    // ← NOUVEAU : Constructeur avec GOLD
+    /**
+     * Constructeur avec valeurs initiales incluant les jetons Or.
+     * Permet de créer directement un objet Resources avec des quantités spécifiques,
+     * y compris les jetons Or (utilisé principalement pour l'initialisation du plateau).
+     * 
+     * @param diamond nombre de diamants
+     * @param sapphire nombre de saphirs
+     * @param emerald nombre d'émeraudes
+     * @param onyx nombre d'onyx
+     * @param ruby nombre de rubis
+     * @param gold nombre de jetons Or
+     */
+    public Resources(int diamond, int sapphire, int emerald, int onyx, int ruby, int gold) {
+        resources = new int[6];
+        resources[0] = diamond;
+        resources[1] = sapphire;
+        resources[2] = emerald;
+        resources[3] = onyx;
+        resources[4] = ruby;
+        resources[5] = gold;
     }
     
     /**

@@ -97,6 +97,7 @@ public class Board implements Displayable {
      *    - 2 joueurs : 4 jetons par type
      *    - 3 joueurs : 5 jetons par type
      *    - 4 joueurs : 7 jetons par type
+     * Initialisation des jetons Or : toujours 5 jetons (indépendant du nombre de joueurs)
      * 
      * NOBLES :
      * 6. Lecture des nobles dans stats.csv (lignes avec tier = 0)
@@ -126,7 +127,7 @@ public class Board implements Displayable {
         if (nbPlayers == 4) {
             nombreJetons = 7;
         }
-        resources = new Resources(nombreJetons, nombreJetons, nombreJetons, nombreJetons, nombreJetons);
+        resources = new Resources(nombreJetons, nombreJetons, nombreJetons, nombreJetons, nombreJetons, 5);
         
         // Initialisation Nobles
         this.visibleNobles = new ArrayList<Noble>();
@@ -390,6 +391,9 @@ public class Board implements Displayable {
      * @return true si le plateau a au moins 4 jetons de ce type
      */
     public boolean canGiveSameTokens(Resource res) {
+        if (res == Resource.GOLD) {
+            return false;
+        }
         return getNbResource(res) >= 4;
     }
     
@@ -413,6 +417,9 @@ public class Board implements Displayable {
         
         // Vérifier que chaque ressource est disponible
         for (Resource res : requestedResources) {
+            if (res == Resource.GOLD) {
+                return false;
+            }
             if (getNbResource(res) < 1) {
                 return false;
             }
@@ -480,13 +487,12 @@ public class Board implements Displayable {
      * @return un tableau contenant une seule ligne avec toutes les ressources
      */
     private String[] resourcesToStringArray() {
-        String[] resStr = {"Resources disponibles : "};
+        String[] resStr = {"Resources disponibles :  "};
         
         for (Resource res : Resource.values()) {
-            resStr[0] += resources.getNbResource(res) + res.toSymbol() + " ";
+            resStr[0] += resources.getNbResource(res) + res.toSymbol() + "  ";
         }
-        
-        resStr[0] += "        ";
+
         return resStr;
     }
     
@@ -662,11 +668,12 @@ public class Board implements Displayable {
             horizontal = 58;
         } else if (totalSlots == 5){
             vertical = 35;
-            horizontal = 69;
+            horizontal = 68;
         }
         
-        res = Display.concatStringArray(res, Display.emptyStringArray(vertical, 1, " \u250A"), false);
         res = Display.concatStringArray(res, Display.emptyStringArray(1, horizontal, "\u2509"), true);
+        res = Display.concatStringArray(res, Display.emptyStringArray(vertical, 1, " \u250A"), false);
+        res[35] = res[35].substring(0, res[35].length() - 2) + "\u2509\u250A";
         
         if (res.length > 2) {
             String line = res[2];

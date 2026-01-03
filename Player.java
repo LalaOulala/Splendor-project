@@ -68,9 +68,17 @@ public abstract class Player implements Displayable {
     private ArrayList<Noble> purchasedNobles;
     
     /**
+     * Liste des cartes réservées par le joueur.
+     * Un joueur peut réserver jusqu'à 3 cartes maximum pour les acheter plus tard.
+     * Les cartes réservées ne peuvent pas être achetées par d'autres joueurs.
+     * Chaque réservation donne 1 jeton Or (si disponible sur le plateau).
+     */
+    private ArrayList<DevCard> reservedCards;
+    
+    /**
      * Constructeur de Player.
      * Initialise un joueur avec son identité et ses attributs par défaut
-     * (0 points, aucune carte, aucun jeton).
+     * (0 points, aucune carte, aucun jeton, aucune réservation).
      * 
      * @param id identifiant unique du joueur (0 à 3)
      * @param name nom du joueur
@@ -81,8 +89,10 @@ public abstract class Player implements Displayable {
         this.points = 0;
         this.purchasedCards = new ArrayList<>();
         this.resources = new Resources();
-        this.purchasedNobles = new ArrayList<Noble>();
+        this.purchasedNobles = new ArrayList<>();
+        this.reservedCards = new ArrayList<>();
     }
+
 
 
     // ============= ACCESSEURS =============
@@ -216,32 +226,41 @@ public abstract class Player implements Displayable {
     /**
      * Vérifie si le joueur peut acheter une carte donnée.
      * 
-     * Prend en compte à la fois les jetons possédés ET les bonus des cartes
-     * déjà achetées. Pour chaque type de ressource requis, vérifie que :
-     * (jetons possédés + bonus des cartes) >= coût requis
+     * Prend en compte à la fois les jetons possédés, les bonus des cartes
+     * déjà achetées, ET les jetons Or (jokers) qui peuvent remplacer n'importe quelle ressource.
      * 
-     * Par exemple, si une carte coûte 5 diamants et que le joueur a
-     * 2 jetons diamants + 3 cartes produisant du diamant, il peut l'acheter.
+     * Processus de vérification :
+     * 1. Pour chaque type de ressource (sauf Or), calculer le manque après bonus et jetons
+     * 2. Additionner tous les manques pour obtenir le nombre de jetons Or nécessaires
+     * 3. Vérifier que le joueur possède assez de jetons Or pour combler tous les manques
      * 
      * @param card la carte que le joueur souhaite acheter
-     * @return true si le joueur a suffisamment de ressources (jetons + bonus), false sinon
+     * @return true si le joueur a suffisamment de ressources (jetons + bonus + Or), false sinon
      */
     public boolean canBuyCard(DevCard card) {
         Resources cost = card.getCost();
+        int goldNeeded = 0;
         
+        // Calculer le manque total après bonus et jetons normaux
         for (Resource res : Resource.values()) {
-            int required = cost.getNbResource(res);
-            int jetons = resources.getNbResource(res);
-            int ressourcesCartes = getResFromCards(res);
-            int available = jetons + ressourcesCartes;
-            
-            if (required > available) {
-                return false;
+            if (res != Resource.GOLD){
+                int required = cost.getNbResource(res);
+                int jetons = resources.getNbResource(res);
+                int ressourcesCartes = getResFromCards(res);
+                int available = jetons + ressourcesCartes;
+                
+                // Si insuffisant, accumuler le manque
+                if (required > available) {
+                    goldNeeded += (required - available);
+                }
             }
         }
         
-        return true;
+        // Vérifier si assez de jetons Or pour combler tous les manques
+        int goldOwned = resources.getNbResource(Resource.GOLD);
+        return goldNeeded <= goldOwned;
     }
+
     
     // ============= GESTION DES NOBLES =============
     
@@ -346,6 +365,64 @@ public abstract class Player implements Displayable {
     protected abstract Noble chooseNoble(List<Noble> eligibleNobles);
 
     
+    // ============= GESTION DES RÉSERVATIONS =============
+
+    /**
+     * Retourne le nombre de cartes réservées par le joueur.
+     * Utilisé pour vérifier la limite de 3 réservations maximum.
+     * 
+     * @return le nombre de cartes dans reservedCards
+     */
+    public int getNbReservedCards() {
+        return reservedCards.size();
+    }
+    
+    /**
+     * Retourne la liste des cartes réservées par le joueur.
+     * Permet d'accéder aux détails de chaque carte réservée.
+     * 
+     * @return ArrayList contenant toutes les cartes réservées
+     */
+    public ArrayList<DevCard> getReservedCards() {
+        return reservedCards;
+    }
+    
+    /**
+     * Ajoute une carte à la liste des cartes réservées.
+     * Cette méthode est appelée automatiquement par ReserveCardAction.
+     * 
+     * IMPORTANT : Cette méthode ne vérifie PAS la limite de 3 cartes.
+     * La vérification doit être faite AVANT via canReserve().
+     * 
+     * @param card la carte à réserver
+     */
+    public void addReservedCard(DevCard card) {
+        reservedCards.add(card);
+    }
+    
+    /**
+     * Retire une carte de la liste des cartes réservées.
+     * Cette méthode est appelée automatiquement par BuyCardAction
+     * quand le joueur achète une de ses cartes réservées.
+     * 
+     * @param card la carte à retirer des réservations
+     * @return true si la carte a été trouvée et retirée, false sinon
+     */
+    public boolean removeReservedCard(DevCard card) {
+        return reservedCards.remove(card);
+    }
+    
+    /**
+     * Vérifie si le joueur peut encore réserver une carte.
+     * La limite est de 3 cartes réservées maximum par joueur.
+     * 
+     * @return true si le joueur a moins de 3 cartes réservées, false sinon
+     */
+    public boolean canReserve() {
+        return reservedCards.size() < 3;
+    }
+
+    
     // ============= MÉTHODES ABSTRAITES =============
     
     /**
@@ -384,21 +461,24 @@ public abstract class Player implements Displayable {
      * - L'identifiant et le nom du joueur (ex : "Player 1: Alice")
      * - Les points de prestige avec symbole Unicode circlé (①②③... ou ⓪ si 0 points)
      * - Pour chaque type de ressource : nombre de jetons entre () et nombre de bonus entre []
-     * - Les nobles obtenus sur la même ligne que la première ressource : ⚜N (nb) {points Pts}
-     *   où nb = nombre de nobles, points = total des points rapportés par les nobles
+     * - Les nobles obtenus sur la même ligne que la première ressource : ⚜N (nb) {3 Pts}
+     * - Les cartes réservées affichées sur le côté droit (lignes 4-6)
+     * - Les jetons Or affichés sur la dernière ligne avec Diamond
      * 
-     * Exemple de rendu :
+     * Exemple de rendu avec 2 cartes réservées :
      * Player 1: Camille
-     * ⑤pts
-     * 
-     * ♥R (3) [2]           ⚜N (1) {3 Pts}
-     * ●O (1) [0]
-     * ♣E (2) [1]
-     * ♠S (0) [3]
-     * ♦D (4) [1]
+     * ⑤pts    
+     *                              
+     * ♥R (3) [2]    ⚜N (1) {3 Pts}
+     * ●O (1) [0]    ▮C [2/3]: ┌──┐
+     * ♣E (2) [1]            ┌─│  │
+     * ♠S (0) [3]            │ └──┘
+     * ♦D (4) [1]    ◉G (2)
      * 
      * Les ressources sont affichées dans l'ordre inverse de l'énumération Resource
      * (Rubis, Onyx, Emerald, Sapphire, Diamond) pour correspondre au visuel attendu.
+     * 
+     * Les jetons Or sont affichés sur la dernière ligne avec DIAMOND.
      * 
      * L'information sur les nobles est toujours affichée sur la ligne de la première
      * ressource (♥R), même si le joueur n'a aucun noble (dans ce cas : "⚜N (0) {0 Pts}").
@@ -408,34 +488,77 @@ public abstract class Player implements Displayable {
     public String[] toStringArray() {
         String pointStr = " ";
         String[] strPlayer = new String[8];
-    
+        
         // Affichage des points avec symbole Unicode circlé
         if(points > 0) {
             pointStr = new String(new int[] {getPoints() + 9311}, 0, 1);
         } else {
             pointStr = "\u24EA";
         }
-    
-        // Lignes 0-2 : Nom et points
+        
+        // Ligne 0 : Nom du joueur
         strPlayer[0] = "Player " + (id + 1) + ": " + name;
+        
+        // Ligne 1 : Points
         strPlayer[1] = pointStr + "pts";
+        
+        // Ligne 2 : Vide
         strPlayer[2] = "";
         
         // Lignes 3-7 : Ressources dans l'ordre inverse (Rubis, Onyx, Emerald, Sapphire, Diamond)
         for(Resource res : Resource.values()) {
-            strPlayer[3 + (Resource.values().length - 1 - res.ordinal())] = 
-                res.toSymbol() + " (" + resources.getNbResource(res) + ") [" + getResFromCards(res) + "]";
+            if (res != Resource.GOLD) {  // GOLD géré séparément
+                strPlayer[3 + (Resource.values().length - 2 - res.ordinal())] =
+                    res.toSymbol() + " (" + resources.getNbResource(res) + ") [" + getResFromCards(res) + "]";
+            }
         }
         
-        // Ajouter les nobles sur la même ligne que la première ressource (index 3)
-        // Format : 👑N (nombre) {points Pts}
+        // Ajouter les nobles sur la ligne de RUBY (ligne 3)
         int nbNobles = this.purchasedNobles.size();
-        int ptsNobles = nbNobles * 3;  // Chaque noble vaut 3 points
-        String noblesInfo = "           \u269CN (" + nbNobles + ") {" + ptsNobles + " Pts}";
+        int ptsNobles = nbNobles * 3; // Chaque noble vaut 3 points
+        String noblesInfo = "   \u269CN (" + nbNobles + ") {" + ptsNobles + " Pts}";
+        strPlayer[3] += noblesInfo;
         
-        strPlayer[3] += noblesInfo;  // Concaténer à la ligne de la première ressource (♥R)
+        // Cartes réservées sur les lignes 4-6 (côté droit)
+        int nbReserved = reservedCards.size();
+        String cardSymbol = "\u25AE";  // ▮ rectangle vertical (symbole de carte)
         
+        if (nbReserved == 0) {
+            // Aucune carte réservée
+            strPlayer[4] += "   " + cardSymbol + "C [0/3]";
+            strPlayer[5] += "";
+            strPlayer[6] += "";
+        } else if (nbReserved == 1) {
+            // 1 carte réservée
+            strPlayer[4] += "   " + cardSymbol + "C [1/3]: \u250C\u2500\u2500\u2510";
+            strPlayer[5] += "             \u2502  \u2502";
+            strPlayer[6] += "             \u2514\u2500\u2500\u2518";
+        } else if (nbReserved == 2) {
+            // 2 cartes réservées (empilées)
+            strPlayer[4] += "   " + cardSymbol + "C [2/3]: \u250C\u2500\u2500\u2510";
+            strPlayer[5] += "           \u250C\u2500\u2502  \u2502";
+            strPlayer[6] += "           \u2502 \u2514\u2500\u2500\u2518";
+        } else {
+            // 3 cartes réservées (empilées)
+            strPlayer[4] += "   " + cardSymbol + "C [3/3]: \u250C\u2500\u2500\u2510";
+            strPlayer[5] += "         \u250C\u2500\u250C\u2500\u2502  \u2502";
+            strPlayer[6] += "         \u2502 \u2502 \u2514\u2500\u2500\u2518";
+        }
+        
+        // Ajouter les jetons Or sur la ligne de DIAMOND (ligne 7)
+        int goldTokens = resources.getNbResource(Resource.GOLD);
+        strPlayer[7] += "   " + Resource.GOLD.toSymbol() + " (" + goldTokens + ")";
+        
+        for (int i = 0; i < 8; i++){
+            if (28-strPlayer[i].length()>0){
+                strPlayer[i] += " ".repeat(28-strPlayer[i].length());
+                strPlayer[i] = strPlayer[i].substring(0,28);
+            }
+            if (i == 1 || i == 3){
+                strPlayer[i] = strPlayer[i].substring(0,strPlayer[i].length()-1);
+            }
+            strPlayer[i] += "\u250A";
+        }
         return strPlayer;
     }
-
 }
