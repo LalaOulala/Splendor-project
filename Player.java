@@ -140,6 +140,15 @@ public abstract class Player implements Displayable {
     }
     
     /**
+     * Retourne le nombre de cartes achetées par le joueur.
+     * 
+     * @return le nombre de cartes dans purchasedCards
+     */
+    public ArrayList<DevCard> getPurchasedCards() {
+        return purchasedCards;
+    }
+    
+    /**
      * Retourne le nombre de jetons d'un type de ressource spécifique.
      * 
      * @param res type de ressource à consulter

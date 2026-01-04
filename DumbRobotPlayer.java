@@ -6,10 +6,12 @@ import java.util.Random;
  * Joueur robot avec une stratégie simple et prévisible.
  * 
  * Ce robot applique une stratégie fixe dans un ordre de priorité strict :
- * 1. Acheter n'importe quelle carte achetable (en commençant par le niveau le plus élevé)
- * 2. Prendre 2 jetons identiques (première ressource disponible)
- * 3. Prendre 3 jetons différents (les 3 premières ressources disponibles)
- * 4. Passer son tour
+ * 1. Acheter une carte réservée (si possible)
+ * 2. Acheter n'importe quelle carte achetable (en commençant par le niveau le plus élevé)
+ * 3. Prendre 2 jetons identiques (première ressource disponible)
+ * 4. Prendre 3 jetons différents (les 3 premières ressources disponibles)
+ * 5. Réserver au hasard une carte T1
+ * 6. Passer son tour
  * 
  * Cette stratégie est qualifiée de "stupide" car :
  * - Elle ne planifie pas ses achats (achète la première carte possible)
@@ -17,14 +19,20 @@ import java.util.Random;
  * - Elle ne considère pas quelles cartes donnent le plus de points
  * - Elle ne bloque pas les adversaires
  * - Elle défausse des jetons au hasard sans réflexion stratégique
+ * - Elle réserve au hasard sans analyser l'intérêt des cartes
  * 
  * Un bon joueur analyserait quelles cartes sont accessibles, lesquelles donnent
  * le plus de points, et quels bonus sont les plus utiles pour la suite.
  * 
  * @author FONFREIDE Quentin
- * @version 01/01/2026
+ * @version 04/01/2026
  */
 public class DumbRobotPlayer extends Player {
+    
+    /**
+     * Générateur aléatoire pour les choix aléatoires (réservation T1, défausse).
+     */
+    private Random random;
     
     /**
      * Constructeur.
@@ -35,16 +43,19 @@ public class DumbRobotPlayer extends Player {
      */
     public DumbRobotPlayer(int id, String name) {
         super(id, name);
+        this.random = new Random();
     }
     
     /**
      * Choisit une action selon la stratégie du robot stupide.
      * 
      * Applique un ordre de priorité strict et prévisible :
-     * 1. Acheter une carte (priorité aux niveaux élevés : 3 > 2 > 1)
-     * 2. Prendre 2 jetons identiques (première ressource ayant 4+ jetons)
-     * 3. Prendre 3 jetons différents (les 3 premières ressources disponibles)
-     * 4. Passer son tour (si aucune action n'est possible)
+     * 1. Acheter une carte réservée (priorité aux cartes déjà sécurisées)
+     * 2. Acheter une carte (priorité aux niveaux élevés : 3 > 2 > 1)
+     * 3. Prendre 2 jetons identiques (première ressource ayant 4+ jetons)
+     * 4. Prendre 3 jetons différents (les 3 premières ressources disponibles)
+     * 5. Réserver au hasard une carte T1
+     * 6. Passer son tour (si aucune action n'est possible)
      * 
      * Cette stratégie ne cherche pas à optimiser : elle prend la première action
      * possible sans analyser si c'est le meilleur choix.
@@ -55,7 +66,17 @@ public class DumbRobotPlayer extends Player {
     @Override
     public Action chooseAction(Board board) {
         
-        // ========== PRIORITÉ 1 : Essayer d'acheter une carte ==========
+        // ========== PRIORITÉ 1 : Acheter une carte réservée ==========
+        // Parcourir les cartes réservées et acheter la première achetable
+        List<DevCard> reserved = getReservedCards();
+        
+        for (DevCard card : reserved) {
+            if (canBuyCard(card)) {
+                return new BuyCardAction(card, true);
+            }
+        }
+        
+        // ========== PRIORITÉ 2 : Essayer d'acheter une carte du plateau ==========
         // On commence par les cartes de plus haut niveau (3 > 2 > 1)
         for (int tier = 3; tier >= 1; tier--) {
             for (int col = 0; col < 4; col++) {
@@ -63,19 +84,19 @@ public class DumbRobotPlayer extends Player {
                 
                 // Vérifier que la carte existe et qu'on peut l'acheter
                 if (card != null && canBuyCard(card)) {
-                    return new BuyCardAction(card);
+                    return new BuyCardAction(card, false);
                 }
             }
         }
         
-        // ========== PRIORITÉ 2 : Prendre 2 jetons identiques ==========
+        // ========== PRIORITÉ 3 : Prendre 2 jetons identiques ==========
         for (Resource res : Resource.values()) {
             if (board.canGiveSameTokens(res)) {
                 return new PickSameTokensAction(res);
             }
         }
         
-        // ========== PRIORITÉ 3 : Prendre 3 jetons différents ==========
+        // ========== PRIORITÉ 4 : Prendre 3 jetons différents ==========
         List<Resource> availableRes = board.getResources().getAvailableResources();
         
         if (availableRes.size() >= 3) {
@@ -90,7 +111,27 @@ public class DumbRobotPlayer extends Player {
             }
         }
         
-        // ========== PRIORITÉ 4 : Passer son tour ==========
+        // ========== PRIORITÉ 5 : Réserver au hasard une carte T1 ==========
+        // Si le robot peut réserver (< 3 cartes réservées)
+        if (canReserve()) {
+            // Collecter toutes les cartes T1 disponibles
+            List<DevCard> t1Cards = new ArrayList<>();
+            
+            for (int col = 0; col < 4; col++) {
+                DevCard card = board.getCard(1, col);
+                if (card != null) {
+                    t1Cards.add(card);
+                }
+            }
+            
+            // Si des cartes T1 existent, en réserver une au hasard
+            if (!t1Cards.isEmpty()) {
+                DevCard randomT1 = t1Cards.get(random.nextInt(t1Cards.size()));
+                return new ReserveCardAction(randomT1, false);
+            }
+        }
+        
+        // ========== PRIORITÉ 6 : Passer son tour ==========
         return new PassAction();
     }
     
@@ -112,7 +153,6 @@ public class DumbRobotPlayer extends Player {
         int toRemove = totalTokens - 10;
         
         Resources discard = new Resources();
-        Random random = new Random();
         
         // Défausser aléatoirement jusqu'à avoir 10 jetons
         while (toRemove > 0) {

@@ -110,13 +110,11 @@ public class Game {
      * 
      * Ce constructeur met en place tout ce qui est nécessaire pour jouer :
      * 1. Valide le nombre de joueurs (2 à 4)
-     * 2. Demande la répartition humains/robots (amélioration personnelle)
-     * 3. Demande les noms de tous les joueurs
-     * 4. Initialise le plateau de jeu (lit le CSV, crée les cartes, les mélange)
-     * 5. Crée tous les joueurs dans l'ordre de jeu
-     * 
-     * Version de base : 1 joueur humain + robots
-     * Amélioration personnelle : configuration flexible avec n'importe quelle combinaison
+     * 2. Demande la répartition humains/robots
+     * 3. Demande combien de robots Rush (le reste sera DumbRobot)
+     * 4. Demande les noms de tous les joueurs (humains, puis Rush, puis Dumb)
+     * 5. Initialise le plateau de jeu (lit le CSV, crée les cartes, les mélange)
+     * 6. Crée tous les joueurs dans l'ordre de jeu
      * 
      * @param nbOfPlayers nombre total de joueurs (2, 3 ou 4)
      * @throws IllegalArgumentException si le nombre de joueurs n'est pas entre 2 et 4
@@ -142,7 +140,7 @@ public class Game {
             display.out.print("Combien de joueurs humains ? (0-" + nbOfPlayers + ") : ");
             try {
                 nbHumans = scanner.nextInt();
-                scanner.nextLine();  // Consommer le retour à la ligne
+                scanner.nextLine();
                 display.out.print(nbHumans);
                 display.out.println();
                 if (nbHumans >= 0 && nbHumans <= nbOfPlayers) {
@@ -152,17 +150,73 @@ public class Game {
                 }
             } catch (Exception e) {
                 display.out.println("Erreur : veuillez entrer un nombre valide");
-                scanner.nextLine();  // Vider le buffer
+                scanner.nextLine();
             }
         }
         
         int nbRobots = nbOfPlayers - nbHumans;
         display.out.println("\n→ " + nbHumans + " joueur(s) humain(s)");
         display.out.println("→ " + nbRobots + " robot(s)");
+        display.out.println();
+        
+        // ========== DEMANDER LE NOMBRE DE ROBOTS RUSH ==========
+        
+        int nbRushRobots = 0;
+        validInput = false;
+        
+        while (!validInput) {
+            display.out.print("Combien de RushRobots ? (0-" + nbRobots + ") : ");
+            try {
+                nbRushRobots = scanner.nextInt();
+                scanner.nextLine();
+                display.out.print(nbRushRobots);
+                display.out.println();
+                if (nbRushRobots >= 0 && nbRushRobots <= nbRobots) {
+                    validInput = true;
+                } else {
+                    display.out.println("Erreur : le nombre doit être entre 0 et " + nbRobots);
+                }
+            } catch (Exception e) {
+                display.out.println("Erreur : veuillez entrer un nombre valide");
+                scanner.nextLine();
+            }
+        }
+        
+        // ========== DEMANDER LE NOMBRE DE SMART RUSH ROBOTS ==========
+        int nbSmartRushRobots = 0;
+        validInput = false;
+        
+        if (nbRushRobots > 0) {
+            while (!validInput) {
+                display.out.print("Combien de SmartRushRobots ? (0-" + nbRushRobots + ") : ");
+                try {
+                    nbSmartRushRobots = scanner.nextInt();
+                    scanner.nextLine();
+                    display.out.print(nbSmartRushRobots);
+                    display.out.println();
+                    if (nbSmartRushRobots >= 0 && nbSmartRushRobots <= nbRushRobots) {
+                        validInput = true;
+                    } else {
+                        display.out.println("Erreur : le nombre doit être entre 0 et " + nbRushRobots);
+                    }
+                } catch (Exception e) {
+                    display.out.println("Erreur : veuillez entrer un nombre valide");
+                    scanner.nextLine();
+                }
+            }
+        }
+        
+        int nbSimpleRushRobots = nbRushRobots - nbSmartRushRobots;
+        int nbDumbRobots = nbRobots - nbRushRobots;
+        
+        display.out.println("→ " + nbSmartRushRobots + " SmartRushRobot(s)");
+        display.out.println("→ " + nbSimpleRushRobots + " RushRobot(s)");
+        display.out.println("→ " + nbDumbRobots + " DumbRobot(s)");
         
         // ========== INITIALISATION DU PLATEAU ==========
         display.outBoard.println("\nInitialisation du plateau de jeu...");
         board = new Board(nbOfPlayers);
+
         
         // ========== INITIALISATION DES JOUEURS ==========
         players = new ArrayList<>();
@@ -185,16 +239,44 @@ public class Game {
             }
         }
         
-        // ========== CRÉER LES ROBOTS ==========
-        if (nbRobots > 0) {
-            display.out.println("\n=== Robots ===");
-            for (int i = 0; i < nbRobots; i++) {
-                display.out.print("Nom du robot " + (i + 1) + " : ");
+        // ========== CRÉER LES SMART RUSH ROBOTS ==========
+        if (nbSmartRushRobots > 0) {
+            display.out.println("\n=== SmartRushRobots ===");
+            for (int i = 0; i < nbSmartRushRobots; i++) {
+                display.out.print("Nom du SmartRushRobot " + (i + 1) + " : ");
+                String name = scanner.nextLine();
+                display.out.print(name);
+                display.out.println();
+                players.add(new SmartRushRobotPlayer(playerID, name));
+                display.out.println("✓ SmartRushRobot '" + name + "' créé");
+                playerID++;
+            }
+        }
+        
+        // ========== CRÉER LES RUSH ROBOTS (SIMPLES) ==========
+        if (nbSimpleRushRobots > 0) {
+            display.out.println("\n=== RushRobots ===");
+            for (int i = 0; i < nbSimpleRushRobots; i++) {
+                display.out.print("Nom du RushRobot " + (i + 1) + " : ");
+                String name = scanner.nextLine();
+                display.out.print(name);
+                display.out.println();
+                players.add(new RushRobotPlayer(playerID, name));
+                display.out.println("✓ RushRobot '" + name + "' créé");
+                playerID++;
+            }
+        }
+        
+        // ========== CRÉER LES DUMB ROBOTS ==========
+        if (nbDumbRobots > 0) {
+            display.out.println("\n=== DumbRobots ===");
+            for (int i = 0; i < nbDumbRobots; i++) {
+                display.out.print("Nom du DumbRobot " + (i + 1) + " : ");
                 String name = scanner.nextLine();
                 display.out.print(name);
                 display.out.println();
                 players.add(new DumbRobotPlayer(playerID, name));
-                display.out.println("✓ Robot '" + name + "' créé");
+                display.out.println("✓ DumbRobot '" + name + "' créé");
                 playerID++;
             }
         }
@@ -203,6 +285,7 @@ public class Game {
         display.out.println("Tous les joueurs sont prêts ! La partie commence !");
         display.out.println("=".repeat(50));
     }
+
 
 
 
@@ -395,61 +478,88 @@ public class Game {
         display.outBoard.println(String.join("\n", mainDisplay));
     }
 
-    /**
+     /**
      * Lance la boucle principale du jeu - Le cœur du programme.
      * 
-     * Cette méthode fait tourner la partie du début à la fin :
-     * 1. Affiche l'état actuel du jeu
-     * 2. Le joueur actuel joue son tour (choix et exécution d'une action)
-     * 3. Gestion de la défausse obligatoire si > 10 jetons
-     * 4. Pause d'une seconde pour laisser le temps de lire
-     * 5. Passage au joueur suivant (rotation circulaire avec modulo)
-     * 6. Répète jusqu'à ce qu'un joueur atteigne 15 points
-     * 7. Affiche l'état final et annonce le gagnant
+     * Cette méthode fait tourner la partie du début à la fin avec une règle
+     * officielle de Splendor : la vérification de victoire se fait EN FIN DE TOUR.
+     * 
+     * DÉROULEMENT D'UN TOUR COMPLET :
+     * 1. Tous les joueurs jouent leur action à tour de rôle
+     * 2. Chaque joueur gère sa défausse si nécessaire (> 10 jetons)
+     * 3. À la fin du tour (après que TOUS ont joué) :
+     *    - Vérification si au moins un joueur a atteint 15 points
+     *    - Si oui : fin de partie et annonce du gagnant
+     *    - Si non : tour suivant
+     * 
+     * AVANTAGES DE CETTE RÈGLE :
+     * - Tous les joueurs ont le même nombre de tours (équité)
+     * - Un joueur peut rattraper en fin de tour
+     * - Conforme aux règles officielles de Splendor
      * 
      * La boucle utilise des try-catch pour rendre le jeu robuste face aux erreurs.
      */
     public void play() {
         int currentPlayer = 0;
+        int roundNumber = 1;
         
-        // Boucle de jeu : continue tant qu'il n'y a pas de gagnant
-        while (!isGameOver()) {
+        // Boucle de jeu : continue jusqu'à ce qu'un tour se termine avec un gagnant
+        while (true) {
             
-            // ========== AFFICHAGE DE L'ÉTAT DU JEU ==========
-            display(currentPlayer);
+            display.out.println("\n" + "=".repeat(50));
+            display.out.println("TOUR " + roundNumber);
+            display.out.println("=".repeat(50));
             
-            // ========== TOUR DU JOUEUR ACTUEL ==========
-            try {
-                move(currentPlayer);
-            } catch (Exception e) {
-                display.out.println("❌ Erreur pendant le tour : " + e.getMessage());
-                e.printStackTrace();
+            // ========== UN TOUR COMPLET : TOUS LES JOUEURS JOUENT ==========
+            for (int i = 0; i < players.size(); i++) {
+                
+                // ========== AFFICHAGE DE L'ÉTAT DU JEU ==========
+                display(currentPlayer);
+                
+                // ========== TOUR DU JOUEUR ACTUEL ==========
+                try {
+                    move(currentPlayer);
+                } catch (Exception e) {
+                    display.out.println("❌ Erreur pendant le tour : " + e.getMessage());
+                    e.printStackTrace();
+                }
+                
+                // ========== VÉRIFIER LA DÉFAUSSE ==========
+                try {
+                    discardToken(currentPlayer);
+                } catch (Exception e) {
+                    display.out.println("❌ Erreur pendant la défausse : " + e.getMessage());
+                    e.printStackTrace();
+                }
+                
+                // ========== PAUSE POUR LIRE L'ÉCRAN ==========
+                display.out.println("\n" + "-".repeat(50));
+                try {
+                    Thread.sleep(1000);  // Pause de 1 seconde
+                } catch (InterruptedException e) {
+                    // Ignorer
+                }
+                
+                // ========== JOUEUR SUIVANT ==========
+                currentPlayer = (currentPlayer + 1) % players.size();
             }
             
-            // ========== VÉRIFIER LA DÉFAUSSE ==========
-            try {
-                discardToken(currentPlayer);
-            } catch (Exception e) {
-                display.out.println("❌ Erreur pendant la défausse : " + e.getMessage());
-                e.printStackTrace();
+            // ========== VÉRIFICATION EN FIN DE TOUR ==========
+            // Tous les joueurs ont joué, on vérifie maintenant si quelqu'un a gagné
+            if (isGameOver()) {
+                display.out.println("\n \u2655 Un joueur a atteint 15 points ! Fin de la partie...");
+                break;  // Sortir de la boucle de jeu
             }
             
-            // ========== PAUSE POUR LIRE L'ÉCRAN ==========
-            display.out.println("\n" + "-".repeat(50));
-            try {
-                Thread.sleep(1000);  // Pause de 1 seconde
-            } catch (InterruptedException e) {
-                // Ignorer
-            }
-            
-            // ========== JOUEUR SUIVANT ==========
-            currentPlayer = (currentPlayer + 1) % players.size();
+            // ========== TOUR SUIVANT ==========
+            roundNumber++;
         }
         
         // ========== FIN DE PARTIE ==========
         display(currentPlayer);  // Afficher l'état final
         gameOver();
     }
+
 
 
     /**
