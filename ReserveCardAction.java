@@ -18,7 +18,7 @@
  * 3. Donner 1 jeton Or au joueur (si disponible sur le plateau)
  * 4. Si carte visible : la remplacer par une nouvelle de la même pile
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & GONTIER Titouan
  * @version 02/01/2026
  */
 public class ReserveCardAction implements Action {

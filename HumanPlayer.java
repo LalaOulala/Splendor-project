@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * - Récapitulatifs clairs avant chaque action
  * - Gestion des cas limites (moins de 3 ressources disponibles)
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & TAHAR Elias
  * @version 01/01/2026
  */
 public class HumanPlayer extends Player {

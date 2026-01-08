@@ -29,7 +29,8 @@ import java.util.Scanner;
  */
 public class Game {
     
-    /* L'affichage et la lecture d'entrée avec l'interface de jeu se fera entièrement via l'attribut display de la classe Game.
+    /** 
+     * L'affichage et la lecture d'entrée avec l'interface de jeu se fera entièrement via l'attribut display de la classe Game.
      * Celui-ci est rendu visible à toutes les autres classes par souci de simplicité.
      * L'intéraction avec la classe Display est très similaire à celle que vous auriez avec la classe System :
      *    - affichage de l'état du jeu (méthodes fournies): Game.display.outBoard.println("Nombre de joueurs: 2");

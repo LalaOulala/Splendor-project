@@ -24,7 +24,7 @@ import java.util.Random;
  * Un bon joueur analyserait quelles cartes sont accessibles, lesquelles donnent
  * le plus de points, et quels bonus sont les plus utiles pour la suite.
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & TAHAR Elias
  * @version 04/01/2026
  */
 public class DumbRobotPlayer extends Player {

@@ -25,7 +25,7 @@ import java.util.Collections;
  * - Tableau 2D pour les cartes visibles (3 niveaux × 4 cartes)
  * - Objet Resources pour gérer les jetons disponibles
  * 
- * @author FONFREIDE Quentin
+ * @author Fourni par l'enseignant + FONFREIDE Quentin
  * @version 01/01/2026
  */
 public class Board implements Displayable {

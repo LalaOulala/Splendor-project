@@ -10,7 +10,7 @@
  * après chaque tour si le joueur a plus de 10 jetons. Le joueur peut défausser
  * un ou plusieurs jetons jusqu'à revenir à 10 (ou moins).
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & GONTIER Titouan
  * @version 01/01/2026
  */
 public class DiscardTokensAction implements Action {

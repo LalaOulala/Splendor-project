@@ -48,7 +48,7 @@ import java.util.Random;
  * - Par défaut : 3 jetons différents (diversification)
  * - Exception : 2 jetons si couleur très dominante (cible = 1ère priorité + 4+ disponibles)
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & TAHAR Elias
  * @version 04/01/2026
  */
 public class SmartRushRobotPlayer extends Player {

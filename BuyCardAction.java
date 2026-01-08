@@ -21,7 +21,7 @@
  * La vérification de disponibilité doit être effectuée avant de créer cette action
  * (via player.canBuyCard(card)).
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & GONTIER Titouan
  * @version 02/01/2026
  */
 public class BuyCardAction implements Action {

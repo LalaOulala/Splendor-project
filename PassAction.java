@@ -11,7 +11,7 @@
  * C'est l'action la plus simple : elle ne modifie rien à l'état du jeu,
  * elle fait simplement passer le tour au joueur suivant.
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & GONTIER Titouan
  * @version 01/01/2026
  */
 public class PassAction implements Action {

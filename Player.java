@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * Cette classe implémente Displayable pour permettre l'affichage de l'état
  * du joueur dans le terminal.
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & TAHAR Elias
  * @version 01/01/2026
  */
 public abstract class Player implements Displayable {

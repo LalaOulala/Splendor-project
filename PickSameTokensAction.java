@@ -12,7 +12,7 @@
  * C'est une action courante en début de partie pour accumuler rapidement une ressource
  * spécifique nécessaire à l'achat d'une carte ciblée.
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & GONTIER Titouan
  * @version 01/01/2026
  */
 public class PickSameTokensAction implements Action {

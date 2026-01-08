@@ -57,7 +57,7 @@ import java.util.Random;
  * - DumbRobot : achète beaucoup de T1
  * - RushRobot : limite les T1 (2 prioritaires, puis priorité basse)
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & TAHAR Elias
  * @version 03/01/2026
  */
 public class RushRobotPlayer extends Player {

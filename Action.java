@@ -13,7 +13,7 @@
  * - DiscardTokensAction : défausser des jetons (quand on en a plus de 10)
  * - PassAction : passer son tour sans rien faire
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & GONTIER Titouan
  * @version 01/01/2026
  */
 public interface Action {

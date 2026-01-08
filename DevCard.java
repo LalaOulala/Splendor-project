@@ -10,7 +10,7 @@
  * Les cartes sont chargées depuis le fichier stats.csv lors de l'initialisation du plateau.
  * Dans le jeu physique Splendor, il existe 90 cartes de développement réparties en 3 tierx.
  * 
- * @author FONFREIDE Quentin
+ * @author Fourni par l'enseignant + FONFREIDE Quentin
  * @version 01/01/2026
  */
 public class DevCard implements Displayable {

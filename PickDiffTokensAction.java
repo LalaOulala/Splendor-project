@@ -15,7 +15,7 @@ import java.util.List;
  * La vérification doit être effectuée avant de créer cette action
  * (via board.canGiveDiffTokens(resources)).
  * 
- * @author FONFREIDE Quentin
+ * @author FONFREIDE Quentin & GONTIER Titouan
  * @version 01/01/2026
  */
 public class PickDiffTokensAction implements Action {
